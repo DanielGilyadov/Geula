@@ -1,5 +1,7 @@
 import React from 'react';
-import { Modal, Input, Button, Checkbox } from 'antd';
+import { Modal, Input, Button, Checkbox, DatePicker } from 'antd';
+import { HDate } from 'hebcal';
+import moment from 'moment';
 
 const EditModal = ({
   visible,
@@ -12,10 +14,20 @@ const EditModal = ({
     return null; // Не рендерим, если данных для редактирования нет
   }
 
+  // Функция для преобразования григорианской даты в еврейскую
+  const handleDateChange = (date) => {
+    if (date) {
+      const hebrewDate = new HDate(date.toDate()); // Создаем объект HDate
+      const formattedHebrewDate = hebrewDate.toString(); // Получаем строку с еврейской датой
+  
+      onChange('importantDate', formattedHebrewDate); // Сохраняем еврейскую дату
+    }
+  };
+
   return (
     <Modal
       title="Редактировать информацию"
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       footer={[
         <Button key="cancel" onClick={onCancel}>
@@ -51,12 +63,20 @@ const EditModal = ({
           placeholder="Возраст"
           style={{ marginBottom: 10 }}
         />
+        
+        {/* DatePicker с конвертацией даты */}
+        <DatePicker
+          onChange={handleDateChange}
+          placeholder="Выберите дату"
+          style={{ width: '100%', marginBottom: 10 }}
+        />
         <Input
           value={editingPerson.importantDate}
-          onChange={(e) => onChange('importantDate', e.target.value)}
-          placeholder="Важная дата"
+          placeholder="Еврейская дата"
+          disabled
           style={{ marginBottom: 10 }}
         />
+
         <Input
           value={editingPerson.importantDateDiscription}
           onChange={(e) => onChange('importantDateDiscription', e.target.value)}
