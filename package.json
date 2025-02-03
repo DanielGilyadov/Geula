@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hebcal/core": "^5.9.0",
     "antd": "^5.23.1",
     "cra-template": "1.2.0",
     "hebcal": "^2.3.2",

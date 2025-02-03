@@ -20,7 +20,8 @@ const EditModal = ({
       const hebrewDate = new HDate(date.toDate()); // Создаем объект HDate
       const formattedHebrewDate = hebrewDate.toString(); // Получаем строку с еврейской датой
   
-      onChange('importantDate', formattedHebrewDate); // Сохраняем еврейскую дату
+      onChange('importantDate', date.format('DD.MM.YYYY')); // Сохраняем григорианскую дату
+      onChange('hebrewDate', formattedHebrewDate); // Сохраняем еврейскую дату
     }
   };
 
@@ -71,7 +72,7 @@ const EditModal = ({
           style={{ width: '100%', marginBottom: 10 }}
         />
         <Input
-          value={editingPerson.importantDate}
+          value={editingPerson.hebrewDate} // Отображаем еврейскую дату
           placeholder="Еврейская дата"
           disabled
           style={{ marginBottom: 10 }}
