@@ -4,9 +4,10 @@ import { HDate } from '@hebcal/core'; // Правильный импорт
 import moment from 'moment';
 
 const columns = (onEdit) => [
-  { title: 'Имя', dataIndex: 'name', key: 'name', editable: true },
-  { title: 'Фамилия', dataIndex: 'familyName', key: 'familyName', editable: true },
-  { title: 'Отчество', dataIndex: 'fathersName', key: 'fathersName', editable: true },
+  
+  { title: 'Имя', dataIndex: 'firstname', key: 'firstname', editable: true },
+  { title: 'Фамилия', dataIndex: 'lastname', key: 'lastname', editable: true },
+  { title: 'Отчество', dataIndex: 'fathername', key: 'fathername', editable: true },
   { title: 'Возраст', dataIndex: 'age', key: 'age', editable: true },
   {
     title: 'Важная дата',

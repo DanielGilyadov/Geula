@@ -5,6 +5,7 @@
   "dependencies": {
     "@hebcal/core": "^5.9.0",
     "antd": "^5.23.1",
+    "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "hebcal": "^2.3.2",
     "less": "^4.2.2",

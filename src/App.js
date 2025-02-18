@@ -1,29 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Table, Input, Button, Checkbox, Modal } from 'antd';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import AddPerson from './AddPerson'; // Страница для добавления нового человека
 import columns from './columns';
 import EditModal from './EditModal'; // Импортируем модальное окно
 import ExpandedRow from './ExpandedRow'; // Импортируем компонент
+import { getUserByChatId} from './api';
 
 const { Content, Footer, Header } = Layout;
 
-// Пример данных
-const initialData = [
-  { key: 1, name: 'Иван', familyName: 'Иванов', fathersName: 'Иванович', age: 32, importantDate: '01.01.2025', details: 'deed', importantDateDiscription: 'Бармицва', tfilin: true, relatives: [] },
-  { key: 2, name: 'Мария', familyName: 'Смирнова', fathersName: 'Викторовна', age: 45, importantDate: '07.01.2025', importantDateDiscription: 'День рождения', tfilin: true, relatives: [] },
-  { key: 3, name: 'Алексей', familyName: 'Петров', fathersName: 'Ааронович', age: 29, importantDate: '05.01.2025', importantDateDiscription: 'День рождения', tfilin: false, relatives: [] },
-];
 
 const App = () => {
-  const [people, setPeople] = useState(initialData); // Состояние для списка людей
+  const [people, setPeople] = useState(); // Состояние для списка людей
   const [searchText, setSearchText] = useState(''); // Состояние для текста поиска
   const [editingPerson, setEditingPerson] = useState(null); // Состояние для редактируемого человека
   const location = useLocation(); // Получаем текущий путь
 
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const users = await getUserByChatId(); // Убираем allUsers, если API сам получает пользователей
+        debugger
+        console.log(users)
+        if (users) {
+          setPeople(users); // Обновляем состояние людей
+        }
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error);
+      }
+    };
+
+    fetchUser();
+  }, []); // useEffect вызывается только один раз при монтировании
+
+
   // Функция для обработки поиска
   const handleSearch = (value) => {
-    const filteredData = initialData.filter((item) =>
+    const filteredData = people.filter((item) =>
       Object.values(item).some((field) =>
         String(field).toLowerCase().includes(value.toLowerCase())
       )
@@ -104,7 +118,7 @@ const App = () => {
                 />
                 {/* Блок с количеством людей */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h3>Количество людей: <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{people.length}</span></h3>
+                  {/* <h3>Количество людей: <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{people.length}</span></h3> */}
                 </div>
                 <Table
                   dataSource={people}

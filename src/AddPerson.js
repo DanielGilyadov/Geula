@@ -1,37 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Button, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { addRefFriend} from './api';
 
-const AddPerson = ({ addPerson }) => {
-  const [name, setName] = useState('');
+const AddPerson = ({ }) => {
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [fathername, setFatherName] = useState('');
   const [age, setAge] = useState('');
-  const [fathersName, setFathersName] = useState('');
-  const [familyName, setFamilyName] = useState('');
-  const [relatives, setRelatives] = useState([]);
   const navigate = useNavigate(); // Для перехода назад на главную страницу после добавления
 
-  const handleSubmit = () => {
-    if (name) {
-      const newPerson = { name, age, fathersName, familyName, relatives };
-      addPerson(newPerson);
+  const handleSubmit = async () => {
+    if (firstname) {
+      // const newPerson = { firstname, lastname, fathername, age, relatives };
+      // addPerson(newPerson);
+      debugger
+      await addRefFriend(firstname, lastname, fathername, age);
       navigate('/'); // Возвращаемся на главную
     } else {
       alert("Пожалуйста, заполните все поля!");
     }
   };
 
+
   return (
     <div>
       <h2>Добавить нового человека</h2>
       <Form layout="vertical">
         <Form.Item label="Имя">
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <Input value={firstname} onChange={(e) => setFirstname(e.target.value)} />
         </Form.Item>
         <Form.Item label="Фамилия">
-          <Input value={familyName} onChange={(e) => setFamilyName(e.target.value)} />
+          <Input value={lastname} onChange={(e) => setLastname(e.target.value)} />
         </Form.Item>
         <Form.Item label="Отчество">
-          <Input value={fathersName} onChange={(e) => setFathersName(e.target.value)} />
+          <Input value={fathername} onChange={(e) => setFatherName(e.target.value)} />
         </Form.Item>
         <Form.Item label="Возраст">
           <Input value={age} onChange={(e) => setAge(e.target.value)} />
