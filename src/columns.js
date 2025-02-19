@@ -5,9 +5,9 @@ import moment from 'moment';
 
 const columns = (onEdit) => [
   
-  { title: 'Имя', dataIndex: 'firstname', key: 'firstname', editable: true },
-  { title: 'Фамилия', dataIndex: 'lastname', key: 'lastname', editable: true },
-  { title: 'Отчество', dataIndex: 'fathername', key: 'fathername', editable: true },
+  { title: 'Имя', dataIndex: 'firstName', key: 'firstName', editable: true },
+  { title: 'Фамилия', dataIndex: 'lastName', key: 'lastName', editable: true },
+  { title: 'Отчество', dataIndex: 'fatherName', key: 'fatherName', editable: true },
   { title: 'Возраст', dataIndex: 'age', key: 'age', editable: true },
   {
     title: 'Важная дата',

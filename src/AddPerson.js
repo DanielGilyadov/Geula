@@ -1,48 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { Input, Button, Form } from 'antd';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addRefFriend} from './api';
+import { addRefFriend } from './api';
+import PersonForm from './AddPersonForm/PersonForm';
 
-const AddPerson = ({ }) => {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [fathername, setFatherName] = useState('');
-  const [age, setAge] = useState('');
-  const navigate = useNavigate(); // Для перехода назад на главную страницу после добавления
+const AddPerson = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    fatherName: "",
+    birthDate: "",
+    mobileNumber: "",
+    email: "",
+    gender: "",
+    city: "",
+    metroStation: "",
+    street: "",
+    houseNumber: "",
+    entrance: "",
+    apartment: "",
+    floor: ""
+  });
+  
+  const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    if (firstname) {
-      // const newPerson = { firstname, lastname, fathername, age, relatives };
-      // addPerson(newPerson);
-      debugger
-      await addRefFriend(firstname, lastname, fathername, age);
-      navigate('/'); // Возвращаемся на главную
-    } else {
-      alert("Пожалуйста, заполните все поля!");
-    }
+  const handleChange = (e) => {
+    
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Теперь обновляется только конкретное поле
+    }));
   };
 
+  const handleSubmit = async () => {
+    if (!formData.firstName) {
+      alert("Пожалуйста, укажите имя!");
+      return;
+    }
+  
+    await addRefFriend(formData.firstName, formData.lastName, formData.fatherName, formData.birthDate, formData.mobileNumber, formData.email, formData.gender, formData.city, formData.metroStation, formData.street, formData.houseNumber, formData.entrance, formData.apartment, formData.floor);
+    navigate("/");
+  };
 
   return (
     <div>
       <h2>Добавить нового человека</h2>
-      <Form layout="vertical">
-        <Form.Item label="Имя">
-          <Input value={firstname} onChange={(e) => setFirstname(e.target.value)} />
-        </Form.Item>
-        <Form.Item label="Фамилия">
-          <Input value={lastname} onChange={(e) => setLastname(e.target.value)} />
-        </Form.Item>
-        <Form.Item label="Отчество">
-          <Input value={fathername} onChange={(e) => setFatherName(e.target.value)} />
-        </Form.Item>
-        <Form.Item label="Возраст">
-          <Input value={age} onChange={(e) => setAge(e.target.value)} />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" onClick={handleSubmit}>Добавить</Button>
-        </Form.Item>
-      </Form>
+      <PersonForm 
+        formData={formData} 
+        handleChange={handleChange} 
+        handleSubmit={handleSubmit} 
+      />
     </div>
   );
 };

@@ -15,13 +15,26 @@ export const getUserByChatId = async () => {
     }
 };
 
-export const addRefFriend = async (firstname, lastname, fathername, age) => {
+export const addRefFriend = async (firstName, lastName, fatherName, birthDate, mobileNumber, email, gender, city, metroStation, street, houseNumber, entrance, apartment, floor) => {
     try {
         const response = await axios.post(`${API_REF_FRIEND}`, {
-            firstname: firstname,
-            lastname: lastname,
-            fathername: fathername,
-            age: age
+            firstName: firstName,
+            lastName: lastName,
+            fatherName: fatherName,
+            birthDate: birthDate,
+            mobileNumber: mobileNumber,
+            email: email,
+            gender: gender,
+            address : {
+                city: city,
+                metroStation: metroStation,
+                street: street,
+                houseNumber: houseNumber,
+                entrance: entrance,
+                apartment: apartment,
+                floor: floor
+            }
+
         });
         return response.data; // Возвращаем данные после обновления
     } catch (error) {
