@@ -8,30 +8,39 @@ const columns = (onEdit) => [
   { title: 'Имя', dataIndex: 'firstName', key: 'firstName', editable: true },
   { title: 'Фамилия', dataIndex: 'lastName', key: 'lastName', editable: true },
   { title: 'Отчество', dataIndex: 'fatherName', key: 'fatherName', editable: true },
-  { title: 'Возраст', dataIndex: 'age', key: 'age', editable: true },
-  {
-    title: 'Важная дата',
-    dataIndex: 'importantDate',
-    key: 'importantDate',
-    editable: true,
-    render: (date) => (date ? date : '—'),
-  },
-  // Колонка с еврейской датой
+  { title: 'Номер телефона', dataIndex: 'mobileNumber', key: 'mobileNumber', editable: true },
+  { title: 'Email', dataIndex: 'email', key: 'email', editable: true },
+  { title: 'Дата рождения', dataIndex: 'birthDate', key: 'birthDate', editable: true },
   {
     title: 'Еврейская дата',
-    dataIndex: 'importantDate',
+    dataIndex: 'birthDate',
     key: 'hebrewDate',
     render: (date) => {
       if (!date) return '—'; // Если даты нет, показываем прочерк
 
-      const parsedDate = moment(date, 'DD.MM.YYYY'); // Разбираем строку с датой
+      const parsedDate = moment(date, 'YYYY.MM.DD'); // Разбираем строку с датой
       if (!parsedDate.isValid()) return 'Неверная дата'; // Проверяем валидность
 
       const hebrewDate = new HDate(parsedDate.toDate()); // Преобразуем в еврейскую дату
       return hebrewDate.toString(); // Выводим дату в формате "1 Нисан 5784"
     },
   },
-  { title: 'Описание даты', dataIndex: 'importantDateDiscription', key: 'importantDateDiscription', editable: true },
+  {
+    title: 'Редактировать',
+    key: 'action',
+    render: (_, record) => (
+      <Button onClick={() => onEdit(record)} type="primary">Редактировать</Button>
+    )
+  },
+    // {
+  //   title: 'Важная дата',
+  //   dataIndex: 'importantDate',
+  //   key: 'importantDate',
+  //   editable: true,
+  //   render: (date) => (date ? date : '—'),
+  // },
+  // Колонка с еврейской датой
+  // { title: 'Описание даты', dataIndex: 'importantDateDiscription', key: 'importantDateDiscription', editable: true },
   // {
   //   title: 'Наличие тфилина',
   //   dataIndex: 'tfilin',
@@ -59,13 +68,6 @@ const columns = (onEdit) => [
   //     <Checkbox checked={shabbat}>{shabbat ? 'Да' : 'Нет'}</Checkbox>
   //   )
   // },
-  {
-    title: 'Редактировать',
-    key: 'action',
-    render: (_, record) => (
-      <Button onClick={() => onEdit(record)} type="primary">Редактировать</Button>
-    )
-  },
 ];
 
 export default columns;

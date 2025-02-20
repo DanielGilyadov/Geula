@@ -7,7 +7,7 @@ const API_GET_USERS = 'https://geula-list.ru/users',
 export const getUserByChatId = async () => {
     try {
         const response = await axios.get(`${API_GET_USERS}`);
-        debugger
+        console.log(response.data)
         return response.data; // Возвращаем полученные данные
     } catch (error) {
         console.error('Ошибка при получении данных:', error);
