@@ -1,21 +1,50 @@
 import React from 'react';
-import { Form, Checkbox, Card, Row, Col } from 'antd';
+import { Form, Checkbox, Card, Row, Col, Typography, Divider } from 'antd';
+
+const { Text, Title } = Typography;
 
 const ExpandedRow = ({ record }) => {
   const [form] = Form.useForm();
 
   return (
-    <Card title="Дополнительная информация" style={{ backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
+    <Card title="Дополнительные данные" style={{ backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
       <Form form={form} layout="vertical">
+        <Title level={4}>Религиозные аспекты</Title>
         <Row gutter={[16, 16]}>
-          <Col span={12}><Checkbox checked={record.shabbat}>Соблюдает шаббат</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.kosher}>Соблюдает кашрут</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.tfilin}>Наличие тфилина</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.student}>Участвовал в семинарах</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.books}>Получал книги от общины</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.camp}>Детский лагерь (участие)</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.pesach}>Праздник песах (поездка на песах)</Checkbox></Col>
-          <Col span={12}><Checkbox checked={record.need}>Нуждающийся</Checkbox></Col>
+          {[
+            { key: 'shabbat', label: 'Соблюдает шаббат' },
+            { key: 'kosher', label: 'Соблюдает кашрут' },
+            { key: 'tfilin', label: 'Наличие тфилина' },
+            { key: 'student', label: 'Участвовал в семинарах' },
+            { key: 'books', label: 'Получал книги от общины' },
+            { key: 'camp', label: 'Детский лагерь (участие)' },
+            { key: 'pesach', label: 'Праздник песах (поездка на песах)' },
+            { key: 'need', label: 'Нуждающийся' },
+          ].map((item) => (
+            <Col span={12} key={item.key}>
+              <Form.Item name={item.key} valuePropName="checked" initialValue={record[item.key] || false}>
+                <Checkbox>{item.label}</Checkbox>
+              </Form.Item>
+            </Col>
+          ))}
+        </Row>
+
+        <Divider />
+        <Title level={4}>Место жительства</Title>
+        <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
+          {[
+            { key: 'city', label: 'Город проживания' },
+            { key: 'metroStation', label: 'Метро' },
+            { key: 'street', label: 'Улица' },
+            { key: 'houseNumber', label: 'Дом' },
+            { key: 'entrance', label: 'Подъезд' },
+            { key: 'apartment', label: 'Номер квартиры' },
+            { key: 'floor', label: 'Этаж' },
+          ].map((item) => (
+            <Col span={12} key={item.key}>
+              <Text strong>{item.label}:</Text> <Text>{record.address?.[item.key] || '—'}</Text>
+            </Col>
+          ))}
         </Row>
       </Form>
     </Card>
