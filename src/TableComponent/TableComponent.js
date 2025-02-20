@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Select } from 'antd';
-import columns from './columns';
+import getColumns from './columns';
 import ExpandedRow from './ExpandedRow';
-import styles from './TableComponent.module.css';
 
 const { Option } = Select;
 
-const TableComponent = ({ people, setPeople, onEdit, searchText, setSearchText, expandedRowKeys, setExpandedRowKeys }) => {
+const TableComponent = ({ people, setPeople, searchText, setSearchText, expandedRowKeys, setExpandedRowKeys }) => {
   const [filteredPeople, setFilteredPeople] = useState(people);
   const [selectedCity, setSelectedCity] = useState("all");
+  const [editingKey, setEditingKey] = useState(null);
+  const [editedData, setEditedData] = useState({});
 
   useEffect(() => {
     setFilteredPeople(people);
   }, [people]);
 
-  // Получение списка уникальных городов
   const uniqueCities = [...new Set(people.map((p) => p.address?.city).filter(Boolean))];
 
   const handleSearch = (value) => {
@@ -45,6 +45,25 @@ const TableComponent = ({ people, setPeople, onEdit, searchText, setSearchText, 
     setFilteredPeople(filteredData);
   };
 
+  const handleEditChange = (key, field, value) => {
+    setEditedData((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleSave = (key) => {
+    setPeople((prev) =>
+      prev.map((person) =>
+        person.key === key ? { ...person, ...editedData[key] } : person
+      )
+    );
+    setEditingKey(null);
+  };
+
   return (
     <>
       <div style={{ display: 'flex', gap: '10px', marginBottom: 20 }}>
@@ -72,7 +91,7 @@ const TableComponent = ({ people, setPeople, onEdit, searchText, setSearchText, 
 
       <Table
         dataSource={filteredPeople.map((p, index) => ({ ...p, key: p.id || index }))}
-        columns={columns(onEdit)}
+        columns={getColumns({ editingKey, setEditingKey, onSave: handleSave, onChange: handleEditChange })}
         rowKey="key"
         expandable={{
           expandedRowRender: (record) => <ExpandedRow record={record} />,

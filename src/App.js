@@ -3,7 +3,6 @@ import { Layout, Menu, Button, Modal } from 'antd';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import AddPerson from './AddPerson';
 import TableComponent from './TableComponent/TableComponent';
-import EditModal from './EditModal';
 import { getUserByChatId } from './api';
 import './App.css'; // Подключаем стили
 
@@ -36,22 +35,7 @@ const App = () => {
     setPeople((prevPeople) => [...prevPeople, personWithId]);
   };
 
-  const onEdit = (record) => {
-    setEditingPerson(record);
-  };
 
-  const handleEditChange = (field, value) => {
-    setEditingPerson((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const saveEdits = () => {
-    setPeople((prev) => prev.map((person) => person.key === editingPerson.key ? editingPerson : person));
-    setEditingPerson(null);
-  };
-
-  const cancelEdits = () => {
-    setEditingPerson(null);
-  };
 
   return (
     <Layout>
@@ -73,7 +57,6 @@ const App = () => {
               <TableComponent 
                 people={people} 
                 setPeople={setPeople} 
-                onEdit={onEdit} 
                 searchText={searchText} 
                 setSearchText={setSearchText} 
                 expandedRowKeys={expandedRowKeys} 
@@ -84,13 +67,6 @@ const App = () => {
           <Route path="/add" element={<AddPerson addPerson={addPerson} />} />
         </Routes>
 
-        <EditModal
-          visible={!!editingPerson}
-          editingPerson={editingPerson}
-          onCancel={cancelEdits}
-          onSave={saveEdits}
-          onChange={handleEditChange}
-        />
       </Content>
       <Footer style={{ textAlign: 'center' }}>Metavision ©2025</Footer>
     </Layout>
