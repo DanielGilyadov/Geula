@@ -1,0 +1,24 @@
+.disabled-checkbox {
+    opacity: 1;
+    pointer-events: none;
+  }
+
+  :where(.css-dev-only-do-not-override-nqoqt9).ant-checkbox-disabled .ant-checkbox-inner:after {
+    border-color: white;
+}
+
+  .custom-checkbox .ant-checkbox-inner {
+    border-color: blue !important;
+    background-color: white !important;
+  }
+  
+  .custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: blue !important;
+    border-color: blue !important;
+  }
+  
+  .disabled-checkbox .ant-checkbox-inner {
+    border-color: blue !important;
+    background-color: white !important;
+    opacity: 0.6;
+  }

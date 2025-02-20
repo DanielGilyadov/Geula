@@ -1,13 +1,38 @@
-import React from 'react';
-import { Form, Checkbox, Card, Row, Col, Typography, Divider } from 'antd';
+import React, { useState } from 'react';
+import { Form, Checkbox, Card, Row, Col, Typography, Divider, Button, Input } from 'antd';
+import './ExpandedRow.css';
 
 const { Text, Title } = Typography;
 
-const ExpandedRow = ({ record }) => {
+const ExpandedRow = ({ record, onSave }) => {
   const [form] = Form.useForm();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    form.setFieldsValue({ ...record, ...record.address });
+  };
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      setIsEditing(false);
+      onSave({ ...record, address: { ...values } });
+    } catch (error) {
+      console.error('Validation failed:', error);
+    }
+  };
 
   return (
-    <Card title="Дополнительные данные" style={{ backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
+    <Card
+      title="Дополнительные данные"
+      style={{ backgroundColor: '#f9f9f9', borderRadius: '10px' }}
+      extra={
+        <Button type="primary" onClick={isEditing ? handleSave : handleEdit}>
+          {isEditing ? 'Сохранить' : 'Редактировать'}
+        </Button>
+      }
+    >
       <Form form={form} layout="vertical">
         <Title level={4}>Религиозные аспекты</Title>
         <Row gutter={[16, 16]}>
@@ -23,7 +48,9 @@ const ExpandedRow = ({ record }) => {
           ].map((item) => (
             <Col span={12} key={item.key}>
               <Form.Item name={item.key} valuePropName="checked" initialValue={record[item.key] || false}>
-                <Checkbox>{item.label}</Checkbox>
+                <Checkbox className={!isEditing ? 'disabled-checkbox custom-checkbox' : 'custom-checkbox'} disabled={!isEditing}>
+                  <Text strong>{item.label}</Text>
+                </Checkbox>
               </Form.Item>
             </Col>
           ))}
@@ -42,7 +69,14 @@ const ExpandedRow = ({ record }) => {
             { key: 'floor', label: 'Этаж' },
           ].map((item) => (
             <Col span={12} key={item.key}>
-              <Text strong>{item.label}:</Text> <Text>{record.address?.[item.key] || '—'}</Text>
+              <Text strong>{item.label}:</Text>{' '}
+              {isEditing ? (
+                <Form.Item name={item.key} noStyle>
+                  <Input style={{ width: '80%' }} />
+                </Form.Item>
+              ) : (
+                <Text>{record.address?.[item.key] || '—'}</Text>
+              )}
             </Col>
           ))}
         </Row>

@@ -38,7 +38,7 @@ export const addRefFriend = async (firstName, lastName, fatherName, birthDate, m
         });
         return response.data; // Возвращаем данные после обновления
     } catch (error) {
-        console.error('Ошибка при обновлении очков:', error);
+        console.error('Ошибка при создании:', error);
         throw error; // Пробрасываем ошибку дальше
     }
 };
