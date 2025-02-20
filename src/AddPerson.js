@@ -20,11 +20,11 @@ const AddPerson = () => {
     apartment: "",
     floor: ""
   });
-  
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    
+
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -37,7 +37,7 @@ const AddPerson = () => {
       alert("Пожалуйста, укажите имя!");
       return;
     }
-  
+
     await addRefFriend(formData.firstName, formData.lastName, formData.fatherName, formData.birthDate, formData.mobileNumber, formData.email, formData.gender, formData.city, formData.metroStation, formData.street, formData.houseNumber, formData.entrance, formData.apartment, formData.floor);
     navigate("/");
   };
@@ -45,10 +45,10 @@ const AddPerson = () => {
   return (
     <div>
       <h2>Добавить нового человека</h2>
-      <PersonForm 
-        formData={formData} 
-        handleChange={handleChange} 
-        handleSubmit={handleSubmit} 
+      <PersonForm
+        formData={formData}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
       />
     </div>
   );

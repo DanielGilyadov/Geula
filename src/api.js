@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const API_URL              = 'https://geula-list.ru/users',
-     API_REF_FRIEND        = 'https://geula-list.ru/user/reg';
+const API_GET_USERS = 'https://geula-list.ru/users',
+    API_POST_USER = 'https://geula-list.ru/user/reg';
 
-      // Функция для получения данных пользователя по chatId
+// Функция для получения данных пользователя по chatId
 export const getUserByChatId = async () => {
-    try {  
-        const response = await axios.get(`${API_URL}`);
+    try {
+        const response = await axios.get(`${API_GET_USERS}`);
         debugger
         return response.data; // Возвращаем полученные данные
     } catch (error) {
@@ -17,7 +17,7 @@ export const getUserByChatId = async () => {
 
 export const addRefFriend = async (firstName, lastName, fatherName, birthDate, mobileNumber, email, gender, city, metroStation, street, houseNumber, entrance, apartment, floor) => {
     try {
-        const response = await axios.post(`${API_REF_FRIEND}`, {
+        const response = await axios.post(`${API_POST_USER}`, {
             firstName: firstName,
             lastName: lastName,
             fatherName: fatherName,
@@ -25,7 +25,7 @@ export const addRefFriend = async (firstName, lastName, fatherName, birthDate, m
             mobileNumber: mobileNumber,
             email: email,
             gender: gender,
-            address : {
+            address: {
                 city: city,
                 metroStation: metroStation,
                 street: street,
