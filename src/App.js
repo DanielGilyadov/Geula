@@ -5,6 +5,7 @@ import AddPerson from './AddPerson';
 import TableComponent from './TableComponent/TableComponent';
 import EditModal from './EditModal';
 import { getUserByChatId } from './api';
+import './App.css'; // Подключаем стили
 
 const { Content, Footer, Header } = Layout;
 
@@ -54,15 +55,13 @@ const App = () => {
 
   return (
     <Layout>
-      <Header>
+      <Header className="header-menu">
         <Menu theme="dark" mode="horizontal" selectedKeys={[location.pathname]}>
           <Menu.Item key="/">
             <Link to="/">Главная</Link>
           </Menu.Item>
           <Menu.Item key="/add">
-            <Link to="/add">
-              <Button type="primary">Добавить</Button>
-            </Link>
+           <Link to="/add">Добавить</Link>
           </Menu.Item>
         </Menu>
       </Header>
