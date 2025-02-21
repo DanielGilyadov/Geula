@@ -3,7 +3,7 @@ import { Table, Input, Select } from 'antd';
 import columns from './columns';
 import ExpandedRow from './ExpandedRow';
 import { updateUser } from '../api';
-import styles from './TableComponent.module.css';
+// import styles from './TableComponent.module.css';
 
 const { Option } = Select;
 
@@ -12,14 +12,26 @@ const TableComponent = ({ people, setPeople }) => {
   const [editingKey, setEditingKey] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedReligions, setSelectedReligions] = useState([]);
 
   useEffect(() => {
-    filterData(searchText, selectedCity);
-  }, [people, searchText, selectedCity]);
+    filterData(searchText, selectedCity, selectedReligions);
+  }, [people, searchText, selectedCity, selectedReligions]);
 
   const uniqueCities = [...new Set(people.map((p) => p.address?.city).filter(Boolean))];
 
-  const filterData = (search, city) => {
+  const religiousFilters = [
+    { key: 'hasTT', label: 'Наличие Тфилина' },
+    { key: 'isInNeed', label: 'Нуждающийся' },
+    { key: 'passover', label: 'Пасхальный набор' },
+    { key: 'keepsKosher', label: 'Соблюдает кашрут' },
+    { key: 'childrenCamp', label: 'Детский лагерь' },
+    { key: 'keepsSabbath', label: 'Соблюдает шаббат' },
+    { key: 'hasCommunityBooks', label: 'Имеет общинные книги' },
+    { key: 'seminarParticipant', label: 'Участник семинаров' },
+  ];
+
+  const filterData = (search, city, religions) => {
     let filteredData = [...people];
 
     if (search) {
@@ -34,13 +46,16 @@ const TableComponent = ({ people, setPeople }) => {
       filteredData = filteredData.filter((item) => item.address?.city === city);
     }
 
+    if (religions.length > 0) {
+      filteredData = filteredData.filter((item) =>
+        religions.every((religion) => item.religiousInfo?.[religion])
+      );
+    }
     setFilteredPeople(filteredData);
   };
 
   const onSave = async (key) => {
     const updatedUser = people.find((p) => p.id === key);
-
-    debugger
     if (!updatedUser) return;
 
     try {
@@ -122,6 +137,20 @@ const TableComponent = ({ people, setPeople }) => {
           {uniqueCities.map((city) => (
             <Option key={city} value={city}>
               {city}
+            </Option>
+          ))}
+        </Select>
+        <Select
+          mode="multiple"
+          placeholder="Фильтр по религиозным признакам"
+          onChange={setSelectedReligions}
+          value={selectedReligions}
+          allowClear
+          style={{ width: 250 }}
+        >
+          {religiousFilters.map((filter) => (
+            <Option key={filter.key} value={filter.key}>
+              {filter.label}
             </Option>
           ))}
         </Select>
