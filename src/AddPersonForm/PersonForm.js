@@ -41,8 +41,8 @@ const PersonForm = ({ formData, handleChange, handleSubmit }) => {
             <Item label="Пол">
               <Radio.Group name="gender" value={formData.gender} onChange={handleChange}>
                 <Space>
-                  <Radio value="мужчина">М</Radio>
-                  <Radio value="женщина">Ж</Radio>
+                  <Radio value="М">М</Radio>
+                  <Radio value="Ж">Ж</Radio>
                 </Space>
               </Radio.Group>
             </Item>

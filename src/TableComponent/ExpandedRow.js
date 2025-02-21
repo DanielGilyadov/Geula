@@ -9,14 +9,18 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
 
   // При включении редактирования заполняем форму текущими значениями
   useEffect(() => {
-    if (isEditing) {
-      form.setFieldsValue(record); // Загружаем данные из record
+    if (isEditing && record) {
+      form.setFieldsValue({
+        ...record,
+        address: record.address || {},
+      });
     }
   }, [isEditing, record, form]);
 
   const handleInputChange = (field, value) => {
-    onChange(record.key, field, value);
-    form.setFieldsValue({ [field]: value }); // Сразу обновляем форму
+    const updatedCheckBox = { ...record.religiousInfo, [field]: value };
+    onChange(record.key, 'religiousInfo', updatedCheckBox);
+    form.setFieldsValue({ religiousInfo: updatedCheckBox }); // Обновляем вложенные поля
   };
 
   const handleNestedInputChange = (nestedField, value) => {
@@ -27,26 +31,32 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
 
   return (
     <Card title="Дополнительные данные" style={{ backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
-      <Form layout="vertical" form={form}>
+      <Form
+        layout="vertical"
+        form={form}
+        initialValues={{
+          religiousInfo: record.religiousInfo || {},
+          address: record.address || {},
+        }}
+      >
         {/* === Религиозные аспекты === */}
         <Title level={4}>Религиозные аспекты</Title>
         <Row gutter={[16, 16]}>
           {[
-            { key: 'shabbat', label: 'Соблюдает шаббат' },
-            { key: 'kosher', label: 'Соблюдает кашрут' },
-            { key: 'tfilin', label: 'Наличие тфилина' },
-            { key: 'student', label: 'Участвовал в семинарах' },
-            { key: 'books', label: 'Получал книги от общины' },
-            { key: 'camp', label: 'Детский лагерь (участие)' },
-            { key: 'pesach', label: 'Праздник песах (поездка на песах)' },
-            { key: 'need', label: 'Нуждающийся' },
+            { key: 'keepsSabbath', label: 'Соблюдает шаббат' },
+            { key: 'keepsKosher', label: 'Соблюдает кашрут' },
+            { key: 'hasTT', label: 'Наличие тфилина' },
+            { key: 'seminarParticipant', label: 'Участвовал в семинарах' },
+            { key: 'hasCommunityBooks', label: 'Получал книги от общины' },
+            { key: 'childrenCamp', label: 'Детский лагерь (участие)' },
+            { key: 'passover', label: 'Праздник песах (поездка на песах)' },
+            { key: 'isInNeed', label: 'Нуждающийся' },
           ].map((item) => (
             <Col span={12} key={item.key}>
-              <Form.Item name={item.key} valuePropName="checked" initialValue={record[item.key]}>
+              <Form.Item name={['religiousInfo', item.key]} valuePropName="checked">
                 <Checkbox
-                  className={!isEditing ? 'disabled-checkbox custom-checkbox' : 'custom-checkbox'}
+                 className={!isEditing ? 'disabled-checkbox custom-checkbox' : 'custom-checkbox'}
                   disabled={!isEditing}
-                  checked={record[item.key] || false}
                   onChange={(e) => handleInputChange(item.key, e.target.checked)}
                 >
                   <Text strong>{item.label}</Text>
@@ -71,16 +81,17 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
             { key: 'floor', label: 'Этаж' },
           ].map((item) => (
             <Col span={12} key={item.key}>
-              <Text strong>{item.label}:</Text>{' '}
-              {isEditing ? (
-                <Input
-                  defaultValue={record.address?.[item.key] || ''} // Используем defaultValue, чтобы текст не исчезал
-                  onChange={(e) => handleNestedInputChange(item.key, e.target.value)}
-                  style={{ width: '80%' }}
-                />
-              ) : (
-                <Text>{record.address?.[item.key] || '—'}</Text>
-              )}
+              <Form.Item name={['address', item.key]}>
+                {isEditing ? (
+                  <Input
+                    value={record.address?.[item.key] || ''}
+                    onChange={(e) => handleNestedInputChange(item.key, e.target.value)}
+                    style={{ width: '80%' }}
+                  />
+                ) : (
+                  <Text>{record.address?.[item.key] || '—'}</Text>
+                )}
+              </Form.Item>
             </Col>
           ))}
         </Row>

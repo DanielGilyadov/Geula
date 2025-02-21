@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Input, Select } from 'antd';
 import columns from './columns';
 import ExpandedRow from './ExpandedRow';
+import { updateUser } from '../api'; 
 
 const { Option } = Select;
 
@@ -35,32 +36,70 @@ const TableComponent = ({ people, setPeople }) => {
     setFilteredPeople(filteredData);
   };
 
-  const onSave = (key) => {
-    setEditingKey(null);
-    setPeople([...people]); // Обновляем состояние, чтобы изменения сохранились
+  const onSave = async (key) => {
+    const updatedUser = people.find((p) => p.id === key);
+    
+    debugger
+    if (!updatedUser) return;
+
+    try {
+      // Отправляем изменения на сервер
+      await updateUser(
+        updatedUser.id,
+        updatedUser.firstName,
+        updatedUser.lastName,
+        updatedUser.fatherName,
+        updatedUser.birthDate,
+        updatedUser.mobileNumber,
+        updatedUser.email,
+        updatedUser.gender,
+        updatedUser.address.city,
+        updatedUser.address.metroStation,
+        updatedUser.address.street,
+        updatedUser.address.houseNumber,
+        updatedUser.address.entrance,
+        updatedUser.address.apartment,
+        updatedUser.address.floor,
+        updatedUser.religiousInfo.hasTT,
+        updatedUser.religiousInfo.isInNeed,
+        updatedUser.religiousInfo.passover,
+        updatedUser.religiousInfo.keepsKosher,
+        updatedUser.religiousInfo.childrenCamp,
+        updatedUser.religiousInfo.keepsSabbath,
+        updatedUser.religiousInfo.hasCommunityBooks,
+        updatedUser.religiousInfo.seminarParticipant,
+        
+      );
+
+      // Обновляем состояние только после успешного ответа
+      setPeople([...people]);
+      setEditingKey(null);
+    } catch (error) {
+      console.error('Ошибка при сохранении:', error);
+    }
   };
 
   const onChange = (key, field, value) => {
     setPeople((prev) =>
       prev.map((item) => {
-        if (item.key === key) {
+        if (item.id === key) {
+          const updatedItem = { ...item };
+  
           // Разбираем вложенные ключи (например, 'address.city')
           const keys = field.split('.');
           if (keys.length > 1) {
-            return {
-              ...item,
-              [keys[0]]: {
-                ...item[keys[0]], // Копируем текущий объект address
-                [keys[1]]: value, // Обновляем конкретное поле (city)
-              },
-            };
+            updatedItem[keys[0]] = { ...updatedItem[keys[0]], [keys[1]]: value };
+          } else {
+            updatedItem[field] = value;
           }
-          return { ...item, [field]: value };
+  
+          return updatedItem;
         }
         return item;
       })
     );
   };
+  
 
   return (
     <>

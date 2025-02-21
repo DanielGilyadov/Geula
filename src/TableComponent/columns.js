@@ -9,10 +9,10 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     key: 'firstName',
     editable: true,
     render: (text, record) =>
-      editingKey === record.key ? (
+      editingKey === record.id ? (
         <Input 
-          defaultValue={text} // Используем defaultValue, а не value
-          onChange={(e) => onChange(record.key, 'firstName', e.target.value)} 
+          value={record.firstName || ''} // Используем value вместо defaultValue
+          onChange={(e) => onChange(record.id, 'firstName', e.target.value)} 
           style={{ width: 120 }} 
         />
       ) : (
@@ -25,10 +25,10 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     key: 'lastName',
     editable: true,
     render: (text, record) =>
-      editingKey === record.key ? (
+      editingKey === record.id ? (
         <Input 
-          defaultValue={text} 
-          onChange={(e) => onChange(record.key, 'lastName', e.target.value)} 
+          value={record.lastName || ''}
+          onChange={(e) => onChange(record.id, 'lastName', e.target.value)} 
           style={{ width: 150 }} 
         />
       ) : (
@@ -41,10 +41,10 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     key: 'fatherName',
     editable: true,
     render: (text, record) =>
-      editingKey === record.key ? (
+      editingKey === record.id ? (
         <Input 
-          defaultValue={text} 
-          onChange={(e) => onChange(record.key, 'fatherName', e.target.value)} 
+          value={record.fatherName || ''}
+          onChange={(e) => onChange(record.id, 'fatherName', e.target.value)} 
           style={{ width: 150 }} 
         />
       ) : (
@@ -57,10 +57,10 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     key: 'mobileNumber',
     editable: true,
     render: (text, record) =>
-      editingKey === record.key ? (
+      editingKey === record.id ? (
         <Input 
-          defaultValue={text} 
-          onChange={(e) => onChange(record.key, 'mobileNumber', e.target.value)} 
+          value={record.mobileNumber || ''}
+          onChange={(e) => onChange(record.id, 'mobileNumber', e.target.value)} 
           style={{ width: 120 }} 
         />
       ) : (
@@ -73,10 +73,10 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     key: 'email',
     editable: true,
     render: (text, record) =>
-      editingKey === record.key ? (
+      editingKey === record.id ? (
         <Input 
-          defaultValue={text} 
-          onChange={(e) => onChange(record.key, 'email', e.target.value)} 
+          value={record.email || ''}
+          onChange={(e) => onChange(record.id, 'email', e.target.value)} 
           style={{ width: 250 }} 
         />
       ) : (
@@ -89,10 +89,10 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     key: 'birthDate',
     editable: true,
     render: (text, record) =>
-      editingKey === record.key ? (
+      editingKey === record.id ? (
         <DatePicker
-          defaultValue={text ? moment(text, 'YYYY-MM-DD') : null}
-          onChange={(date, dateString) => onChange(record.key, 'birthDate', dateString)}
+          value={record.birthDate ? moment(record.birthDate, 'YYYY-MM-DD') : null}
+          onChange={(date, dateString) => onChange(record.id, 'birthDate', dateString)}
           format="YYYY-MM-DD"
           style={{ width: 150 }}
           placeholder="Выберите дату"
@@ -116,13 +116,12 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: '',
     key: 'action',
     render: (_, record) => {
-      const isEditing = editingKey === record.key;
+      const isEditing = editingKey === record.id;
       return isEditing ? (
         <Button 
           type="primary" 
           onClick={() => { 
-            onSave(record.key); 
-            setEditingKey(null); // Завершаем редактирование 
+            onSave(record.id); 
           }} 
           style={{ width: 120 }}
         >
@@ -131,7 +130,7 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
       ) : (
         <Button 
           type="primary" 
-          onClick={() => setEditingKey(record.key)} 
+          onClick={() => setEditingKey(record.id)} 
           style={{ width: 120 }}
         >
           Редактировать
