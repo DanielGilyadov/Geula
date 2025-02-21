@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addRefFriend } from './api';
+import { addUser } from './api';
 import PersonForm from './AddPersonForm/PersonForm';
 
-const AddPerson = () => {
+const AddPerson = ({ addPerson }) => { // Теперь принимаем setPeople как пропс
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,11 +24,10 @@ const AddPerson = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value, // Теперь обновляется только конкретное поле
+      [name]: value,
     }));
   };
 
@@ -37,10 +36,32 @@ const AddPerson = () => {
       alert("Пожалуйста, укажите имя!");
       return;
     }
-
-    await addRefFriend(formData.firstName, formData.lastName, formData.fatherName, formData.birthDate, formData.mobileNumber, formData.email, formData.gender, formData.city, formData.metroStation, formData.street, formData.houseNumber, formData.entrance, formData.apartment, formData.floor);
-    navigate("/");
+  
+    try {
+      const newUser = await addUser(
+        formData.firstName,
+        formData.lastName,
+        formData.fatherName,
+        formData.birthDate,
+        formData.mobileNumber,
+        formData.email,
+        formData.gender,
+        formData.city,
+        formData.metroStation,
+        formData.street,
+        formData.houseNumber,
+        formData.entrance,
+        formData.apartment,
+        formData.floor
+      );
+  
+      addPerson(newUser); // Используем addPerson вместо setPeople
+      navigate("/");
+    } catch (error) {
+      console.error("Ошибка при добавлении пользователя:", error);
+    }
   };
+  
 
   return (
     <div>
