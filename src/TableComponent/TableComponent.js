@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Table, Input, Select } from 'antd';
 import columns from './columns';
 import ExpandedRow from './ExpandedRow';
-import { updateUser } from '../api'; 
+import { updateUser } from '../api';
+import styles from './TableComponent.module.css';
 
 const { Option } = Select;
 
@@ -38,7 +39,7 @@ const TableComponent = ({ people, setPeople }) => {
 
   const onSave = async (key) => {
     const updatedUser = people.find((p) => p.id === key);
-    
+
     debugger
     if (!updatedUser) return;
 
@@ -68,7 +69,7 @@ const TableComponent = ({ people, setPeople }) => {
         updatedUser.religiousInfo.keepsSabbath,
         updatedUser.religiousInfo.hasCommunityBooks,
         updatedUser.religiousInfo.seminarParticipant,
-        
+
       );
 
       // Обновляем состояние только после успешного ответа
@@ -84,7 +85,7 @@ const TableComponent = ({ people, setPeople }) => {
       prev.map((item) => {
         if (item.id === key) {
           const updatedItem = { ...item };
-  
+
           // Разбираем вложенные ключи (например, 'address.city')
           const keys = field.split('.');
           if (keys.length > 1) {
@@ -92,14 +93,14 @@ const TableComponent = ({ people, setPeople }) => {
           } else {
             updatedItem[field] = value;
           }
-  
+
           return updatedItem;
         }
         return item;
       })
     );
   };
-  
+
 
   return (
     <>
@@ -125,17 +126,17 @@ const TableComponent = ({ people, setPeople }) => {
           ))}
         </Select>
       </div>
-      
+
       <Table
-  dataSource={filteredPeople.map((p, index) => ({ ...p, key: p.id || index }))}
-  columns={columns({ editingKey, setEditingKey, onSave, onChange, people: people || [] })} // Добавил `|| []`
-  rowKey="key"
-  expandable={{
-    expandedRowRender: (record) => (
-      <ExpandedRow record={record} isEditing={editingKey === record.key} onChange={onChange} />
-    ),
-  }}
-/>
+        dataSource={filteredPeople.map((p, index) => ({ ...p, key: p.id || index }))}
+        columns={columns({ editingKey, setEditingKey, onSave, onChange, people: people || [] })} // Добавил `|| []`
+        rowKey="key"
+        expandable={{
+          expandedRowRender: (record) => (
+            <ExpandedRow record={record} isEditing={editingKey === record.key} onChange={onChange} />
+          ),
+        }}
+      />
 
     </>
   );

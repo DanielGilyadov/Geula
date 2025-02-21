@@ -81,9 +81,14 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
             { key: 'floor', label: 'Этаж' },
           ].map((item) => (
             <Col span={12} key={item.key}>
-              <Form.Item name={['address', item.key]}>
+              
+              <Form.Item 
+                  label={`${item.label} :`} // <-- Добавили лейбл
+                  name={['address', item.key]}
+                >
                 {isEditing ? (
                   <Input
+                    
                     value={record.address?.[item.key] || ''}
                     onChange={(e) => handleNestedInputChange(item.key, e.target.value)}
                     style={{ width: '80%' }}
