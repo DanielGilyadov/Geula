@@ -1,0 +1,41 @@
+.styled-drawer .ant-drawer-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .notification-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+  
+  .notification-container.unread {
+    background: #e6f7ff;
+  }
+  
+  .notification-container.read {
+    background: #f5f5f5;
+  }
+  
+  .message-text {
+    font-weight: bold;
+  }
+  
+  .message-text.read {
+    color: #aaa;
+    font-weight: normal;
+  }
+  
+  .input-container {
+    margin-top: 16px;
+  }
+  
+  .styled-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+  

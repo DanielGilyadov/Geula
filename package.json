@@ -9,6 +9,8 @@
     "cra-template": "1.2.0",
     "file-saver": "^2.0.5",
     "hebcal": "^2.3.2",
+    "jewish-date": "^2.0.19",
+    "kosher-zmanim": "^0.8.2",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
     "moment": "^2.30.1",

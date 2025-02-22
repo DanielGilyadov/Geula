@@ -106,23 +106,23 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     dataIndex: 'birthDate',
     key: 'age',
     render: (date) => {
-      if (!date) return '—';
-      const birthMoment = moment(date, 'YYYY-MM-DD');
+      if (!date || typeof date !== 'string') return '—';
+      const birthMoment = moment.utc(date, 'YYYY-MM-DD'); // Используем UTC
       if (!birthMoment.isValid()) return 'Неверная дата';
       return moment().diff(birthMoment, 'years');
     },
-  },
+  },  
   {
     title: 'Еврейская дата',
     dataIndex: 'birthDate',
     key: 'hebrewDate',
     render: (date) => {
       if (!date) return '—';
-      const parsedDate = moment(date, 'YYYY-MM-DD');
+      const parsedDate = moment.utc(date, 'YYYY-MM-DD'); // Исправлено
       if (!parsedDate.isValid()) return 'Неверная дата';
       return new HDate(parsedDate.toDate()).toString();
     },
-  },
+  },  
   {
     title: '',
     key: 'action',

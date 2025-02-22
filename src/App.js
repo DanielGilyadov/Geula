@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, Modal } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Layout, Menu, Badge, Card } from 'antd';
+import { BellOutlined } from '@ant-design/icons';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import AddPerson from './AddPerson';
 import TableComponent from './TableComponent/TableComponent';
+import Notifications from './Notifications';
 import { getUsers } from './api';
-import './App.css'; // Подключаем стили
+import './App.css';
 
 const { Content, Footer, Header } = Layout;
 
@@ -13,6 +15,10 @@ const App = () => {
   const [searchText, setSearchText] = useState('');
   const location = useLocation();
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const notificationRef = useRef(null);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,10 +35,17 @@ const App = () => {
   }, []);
 
   const addPerson = (newPerson) => {
-    debugger
     setPeople((prevPeople) => [...prevPeople, newPerson]);
   };
 
+  const addNotification = (message) => {
+    setNotifications((prev) => [...prev, message]);
+    setUnreadCount((prev) => prev + 1);
+  };
+
+  const markNotificationsAsRead = () => {
+    setUnreadCount(0);
+  };
 
   return (
     <Layout>
@@ -42,9 +55,30 @@ const App = () => {
             <Link to="/">Главная</Link>
           </Menu.Item>
           <Menu.Item key="/add">
-           <Link to="/add">Добавить</Link>
+            <Link to="/add">Добавить</Link>
           </Menu.Item>
         </Menu>
+        <div
+          ref={notificationRef}
+          className="notification-icon"
+          onClick={() => {
+            setIsDropdownVisible(!isDropdownVisible);
+            if (!isDropdownVisible) markNotificationsAsRead();
+          }}
+        >
+          <Badge count={unreadCount}>
+            <BellOutlined style={{ fontSize: '24px' }} />
+          </Badge>
+          {isDropdownVisible && (
+            <Card className="notification-dropdown">
+              {notifications.length > 0 ? (
+                notifications.map((notif, index) => <p key={index}>{notif}</p>)
+              ) : (
+                <p>Нет новых оповещений</p>
+              )}
+            </Card>
+          )}
+        </div>
       </Header>
       <Content style={{ padding: '50px' }}>
         <Routes>
@@ -58,12 +92,13 @@ const App = () => {
                 setSearchText={setSearchText} 
                 expandedRowKeys={expandedRowKeys} 
                 setExpandedRowKeys={setExpandedRowKeys} 
+                addNotification={addNotification}
               />
             }
           />
-  <Route path="/add" element={<AddPerson addPerson={addPerson} />} />
+          <Route path="/add" element={<AddPerson addPerson={addPerson} />} />
+          <Route path="/notifications" element={<Notifications notifications={notifications} />} />
         </Routes>
-
       </Content>
       <Footer style={{ textAlign: 'center' }}>Metavision ©2025</Footer>
     </Layout>
