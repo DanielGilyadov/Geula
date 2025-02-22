@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_GET_USERS = "/api/users";  // Используем локальный прокси
 const API_POST_USER = "/api/user/reg";
-const API_PUT_USER = "/api/user"
+const API_PUT_USER = "/api/user";
 
 // Функция для получения данных пользователя по chatId
 export const getUsers = async () => {
@@ -43,31 +43,25 @@ export const addUser = async (firstName, lastName, fatherName, birthDate, mobile
     }
 };
 
-export const updateUser = async (userId, firstName, lastName, fatherName, birthDate, mobileNumber, email, gender, 
-                                 city, metroStation, street, houseNumber, entrance, apartment, floor, 
-                                 hasTT, isInNeed, passover, keepsKosher, childrenCamp, keepsSabbath, hasCommunityBooks, seminarParticipant) => {
+export const updateUser = async (user) => {
     try {
-        if (!userId) {
-            console.error("Ошибка: userId отсутствует");
-            return;
-        }
-
-        const response = await axios.put(`${API_PUT_USER}/${userId}`, {
-            firstName,
-            lastName,
-            fatherName,
-            birthDate,
-            mobileNumber,
-            email,
-            gender,
-            address: { city, metroStation, street, houseNumber, entrance, apartment, floor },
-            religiousInfo: { hasTT, isInNeed, passover, keepsKosher, childrenCamp, keepsSabbath, hasCommunityBooks, seminarParticipant }
-        });
-
-        return response.data;
+      if (!user?.id) {
+        console.error("Ошибка: userId отсутствует");
+        return;
+      }
+  
+      const { id, address, religiousInfo, ...userData } = user;
+  
+      const response = await axios.put(`${API_PUT_USER}/${id}`, {
+        ...userData,
+        address: { ...address },
+        religiousInfo: { ...religiousInfo },
+      });
+  
+      return response.data;
     } catch (error) {
-        console.error("Ошибка при обновлении пользователя:", error.response?.data || error.message);
-        throw error;
+      console.error("Ошибка при обновлении пользователя:", error.response?.data || error.message);
+      throw error;
     }
 };
 

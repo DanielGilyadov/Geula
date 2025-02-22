@@ -1,93 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Input, Select } from 'antd';
+import React, { useState } from 'react';
+import { Table, Button, Checkbox } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
+import * as XLSX from 'xlsx';
 import columns from './columns';
 import ExpandedRow from './ExpandedRow';
+import SearchFilters from './SearchFilters';
 import { updateUser } from '../api';
-// import styles from './TableComponent.module.css';
-
-const { Option } = Select;
 
 const TableComponent = ({ people, setPeople }) => {
   const [filteredPeople, setFilteredPeople] = useState(people);
   const [editingKey, setEditingKey] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  const [selectedCity, setSelectedCity] = useState('all');
-  const [selectedReligions, setSelectedReligions] = useState([]);
-
-  useEffect(() => {
-    filterData(searchText, selectedCity, selectedReligions);
-  }, [people, searchText, selectedCity, selectedReligions]);
-
-  const uniqueCities = [...new Set(people.map((p) => p.address?.city).filter(Boolean))];
-
-  const religiousFilters = [
-    { key: 'hasTT', label: 'Наличие Тфилина' },
-    { key: 'isInNeed', label: 'Нуждающийся' },
-    { key: 'passover', label: 'Пасхальный набор' },
-    { key: 'keepsKosher', label: 'Соблюдает кашрут' },
-    { key: 'childrenCamp', label: 'Детский лагерь' },
-    { key: 'keepsSabbath', label: 'Соблюдает шаббат' },
-    { key: 'hasCommunityBooks', label: 'Имеет общинные книги' },
-    { key: 'seminarParticipant', label: 'Участник семинаров' },
-  ];
-
-  const filterData = (search, city, religions) => {
-    let filteredData = [...people];
-
-    if (search) {
-      filteredData = filteredData.filter((item) =>
-        Object.values(item).some((field) =>
-          String(field).toLowerCase().includes(search.toLowerCase())
-        )
-      );
-    }
-
-    if (city && city !== 'all') {
-      filteredData = filteredData.filter((item) => item.address?.city === city);
-    }
-
-    if (religions.length > 0) {
-      filteredData = filteredData.filter((item) =>
-        religions.every((religion) => item.religiousInfo?.[religion])
-      );
-    }
-    setFilteredPeople(filteredData);
-  };
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   const onSave = async (key) => {
     const updatedUser = people.find((p) => p.id === key);
     if (!updatedUser) return;
 
     try {
-      // Отправляем изменения на сервер
-      await updateUser(
-        updatedUser.id,
-        updatedUser.firstName,
-        updatedUser.lastName,
-        updatedUser.fatherName,
-        updatedUser.birthDate,
-        updatedUser.mobileNumber,
-        updatedUser.email,
-        updatedUser.gender,
-        updatedUser.address.city,
-        updatedUser.address.metroStation,
-        updatedUser.address.street,
-        updatedUser.address.houseNumber,
-        updatedUser.address.entrance,
-        updatedUser.address.apartment,
-        updatedUser.address.floor,
-        updatedUser.religiousInfo.hasTT,
-        updatedUser.religiousInfo.isInNeed,
-        updatedUser.religiousInfo.passover,
-        updatedUser.religiousInfo.keepsKosher,
-        updatedUser.religiousInfo.childrenCamp,
-        updatedUser.religiousInfo.keepsSabbath,
-        updatedUser.religiousInfo.hasCommunityBooks,
-        updatedUser.religiousInfo.seminarParticipant,
-
-      );
-
-      // Обновляем состояние только после успешного ответа
+      await updateUser(updatedUser);
       setPeople([...people]);
       setEditingKey(null);
     } catch (error) {
@@ -100,15 +31,12 @@ const TableComponent = ({ people, setPeople }) => {
       prev.map((item) => {
         if (item.id === key) {
           const updatedItem = { ...item };
-
-          // Разбираем вложенные ключи (например, 'address.city')
           const keys = field.split('.');
           if (keys.length > 1) {
             updatedItem[keys[0]] = { ...updatedItem[keys[0]], [keys[1]]: value };
           } else {
             updatedItem[field] = value;
           }
-
           return updatedItem;
         }
         return item;
@@ -116,49 +44,65 @@ const TableComponent = ({ people, setPeople }) => {
     );
   };
 
+  const onSelectAll = (checked) => {
+    setSelectAll(checked);
+    setSelectedRowKeys(checked ? filteredPeople.map((p) => p.id) : []);
+  };
+
+  const onSelectRow = (key, checked) => {
+    setSelectedRowKeys((prev) =>
+      checked ? [...prev, key] : prev.filter((id) => id !== key)
+    );
+  };
+
+  const handleExport = () => {
+    if (selectedRowKeys.length === 0) {
+      alert('Выберите хотя бы одну строку для выгрузки.');
+      return;
+    }
+    
+    const selectedData = filteredPeople
+      .filter((p) => selectedRowKeys.includes(p.id))
+      .map(({ id, firstName, lastName, fatherName, birthDate, mobileNumber, email }) => ({
+        'Имя': firstName,
+        'Фамилия': lastName,
+        'Отчество': fatherName,
+        'Дата рождения': birthDate,
+        'Телефон': mobileNumber,
+        'Email': email,
+      }));
+
+    const worksheet = XLSX.utils.json_to_sheet(selectedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Данные');
+    XLSX.writeFile(workbook, 'выгрузка.xlsx');
+  };
+
+  const modifiedColumns = [
+    {
+      title: <Checkbox checked={selectAll} onChange={(e) => onSelectAll(e.target.checked)} />, 
+      dataIndex: 'select',
+      render: (_, record) => (
+        <Checkbox
+          checked={selectedRowKeys.includes(record.id)}
+          onChange={(e) => onSelectRow(record.id, e.target.checked)}
+        />
+      ),
+    },
+    ...columns({ editingKey, setEditingKey, onSave, onChange, people: people || [] }),
+  ];
 
   return (
     <>
-      <div style={{ display: 'flex', gap: '10px', marginBottom: 20 }}>
-        <Input
-          placeholder="Поиск..."
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          style={{ flex: 1 }}
-        />
-        <Select
-          placeholder="Выберите город"
-          onChange={setSelectedCity}
-          value={selectedCity}
-          allowClear
-          style={{ width: 200 }}
-        >
-          <Option value="all">Все города</Option>
-          {uniqueCities.map((city) => (
-            <Option key={city} value={city}>
-              {city}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          mode="multiple"
-          placeholder="Фильтр по религиозным признакам"
-          onChange={setSelectedReligions}
-          value={selectedReligions}
-          allowClear
-          style={{ width: 250 }}
-        >
-          {religiousFilters.map((filter) => (
-            <Option key={filter.key} value={filter.key}>
-              {filter.label}
-            </Option>
-          ))}
-        </Select>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <SearchFilters people={people} setFilteredPeople={setFilteredPeople} />
+        <Button type="primary" icon={<DownloadOutlined />} onClick={handleExport}>
+          Выгрузить
+        </Button>
       </div>
-
       <Table
         dataSource={filteredPeople.map((p, index) => ({ ...p, key: p.id || index }))}
-        columns={columns({ editingKey, setEditingKey, onSave, onChange, people: people || [] })} // Добавил `|| []`
+        columns={modifiedColumns}
         rowKey="key"
         expandable={{
           expandedRowRender: (record) => (
@@ -166,7 +110,6 @@ const TableComponent = ({ people, setPeople }) => {
           ),
         }}
       />
-
     </>
   );
 };

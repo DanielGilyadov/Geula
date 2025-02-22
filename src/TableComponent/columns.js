@@ -102,6 +102,17 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
       ),
   },
   {
+    title: 'Возраст',
+    dataIndex: 'birthDate',
+    key: 'age',
+    render: (date) => {
+      if (!date) return '—';
+      const birthMoment = moment(date, 'YYYY-MM-DD');
+      if (!birthMoment.isValid()) return 'Неверная дата';
+      return moment().diff(birthMoment, 'years');
+    },
+  },
+  {
     title: 'Еврейская дата',
     dataIndex: 'birthDate',
     key: 'hebrewDate',
