@@ -1,10 +1,12 @@
 import axios from "axios";
 
-const API_GET_USERS = "/api/users";  // Используем локальный прокси
-const API_POST_USER = "/api/user/reg";
-const API_PUT_USER = "/api/user";
+const API_GET_USERS = "/api/api/users",  // Используем локальный прокси
+      API_POST_USER = "/api/api/user/reg",
+       API_PUT_USER = "/api/api/user",
+       API_GET_NOTI = "/api/api/notifications",
+       API_DATES    = "/api/api/dates"
 
-// Функция для получения данных пользователя по chatId
+
 export const getUsers = async () => {
     try {
         const response = await axios.get(API_GET_USERS);
@@ -65,4 +67,26 @@ export const updateUser = async (user) => {
     }
 };
 
+
+export const getNotifications = async () => {
+    try {
+        const response = await axios.get(API_GET_NOTI);
+        console.log(response.data);
+        return response.data; // Возвращаем полученные данные
+    } catch (error) {
+        console.error("Ошибка при получении данных:", error);
+        return null; // Возвращаем null в случае ошибки
+    }
+};
+
+export const getDates = async () => {
+    try {
+        const response = await axios.get(API_DATES);
+        console.log(response.data);
+        return response.data; // Возвращаем полученные данные
+    } catch (error) {
+        console.error("Ошибка при получении данных:", error);
+        return null; // Возвращаем null в случае ошибки
+    }
+};
 

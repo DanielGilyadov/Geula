@@ -6,61 +6,13 @@ import columns from './columns';
 import ExpandedRow from './ExpandedRow';
 import SearchFilters from './SearchFilters';
 import { updateUser } from '../api';
-import { HDate, HebrewCalendar } from 'hebcal';
-import moment from 'moment';
 
 
-const TableComponent = ({ people, setPeople, addNotification }) => {
+const TableComponent = ({ people, setPeople }) => {
   const [filteredPeople, setFilteredPeople] = useState(people);
   const [editingKey, setEditingKey] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  
-  // 📌 Храним ID пользователей, для которых уже отправлены уведомления
-  const notifiedUsersRef = useRef(new Set());
-
-  useEffect(() => {
-    const todayJewishDate = new HDate(); // Текущая еврейская дата
-  
-    people.forEach((person) => {
-      if (!person.birthDate || notifiedUsersRef.current.has(person.id)) return;
-  
-      // Переводим дату рождения в еврейский календарь
-      const jewishBirthDate = new HDate(moment(person.birthDate, 'YYYY-MM-DD').toDate());
-  
-      // Вычисляем возраст в еврейском календаре
-      const jewishAge = todayJewishDate.getFullYear() - jewishBirthDate.getFullYear();
-  
-      // Проверяем, что пользователю ровно 12 лет (перед Бар-Мицвой)
-      if (jewishAge !== 12) return;
-  
-      // Дата Бар-Мицвы (через 13 лет по еврейскому календарю)
-      const barMitzvahDate = new HDate(jewishBirthDate.getDate(), jewishBirthDate.getMonth(), jewishBirthDate.getFullYear() + 13);
-  
-      // Дата начала уведомления (за 6 месяцев до Бар-Мицвы)
-      let notifyDateYear = barMitzvahDate.getFullYear();
-      let notifyDateMonth = barMitzvahDate.getMonth() - 6;
-  
-      // Если месяц стал < 1 (января не бывает в еврейском календаре), переносим на предыдущий год
-      if (notifyDateMonth < 1) {
-        notifyDateYear -= 1;
-        notifyDateMonth += 12; // Сдвигаем назад на 12 месяцев
-        if (HebrewCalendar.isJewishLeapYear(notifyDateYear)) {
-          notifyDateMonth += 1; // Если новый год високосный, учитываем 13-й месяц
-        }
-      }
-  
-      const notifyDate = new HDate(barMitzvahDate.getDate(), notifyDateMonth, notifyDateYear);
-  debugger
-      // Если сегодня еврейская дата совпадает или больше даты начала уведомления, отправляем уведомление
-      if (todayJewishDate >= notifyDate) {
-        addNotification(
-          `${person.firstName} достигнет Бар-Мицвы через 6 месяцев!`
-        );
-        notifiedUsersRef.current.add(person.id);
-      }
-    });
-  }, [people, addNotification]);
   
   const onSave = async (key) => {
     const updatedUser = people.find((p) => p.id === key);

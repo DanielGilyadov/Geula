@@ -1,4 +1,3 @@
-// searchFilters.js
 import { useState, useEffect } from 'react';
 import { Input, Select } from 'antd';
 
@@ -19,39 +18,48 @@ const SearchFilters = ({ people, setFilteredPeople }) => {
   const [searchText, setSearchText] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedReligions, setSelectedReligions] = useState([]);
+  const [minAge, setMinAge] = useState('');
+  const [maxAge, setMaxAge] = useState('');
 
   useEffect(() => {
-    filterData(searchText, selectedCity, selectedReligions);
-  }, [people, searchText, selectedCity, selectedReligions]);
+    filterData();
+  }, [people, searchText, selectedCity, selectedReligions, minAge, maxAge]);
 
   const uniqueCities = [...new Set(people.map((p) => p.address?.city).filter(Boolean))];
 
-  const filterData = (search, city, religions) => {
+  const filterData = () => {
     let filteredData = [...people];
 
-    if (search) {
+    if (searchText) {
       filteredData = filteredData.filter((item) =>
         Object.values(item).some((field) =>
-          String(field).toLowerCase().includes(search.toLowerCase())
+          String(field).toLowerCase().includes(searchText.toLowerCase())
         )
       );
     }
 
-    if (city && city !== 'all') {
-      filteredData = filteredData.filter((item) => item.address?.city === city);
+    if (selectedCity && selectedCity !== 'all') {
+      filteredData = filteredData.filter((item) => item.address?.city === selectedCity);
     }
 
-    if (religions.length > 0) {
+    if (religiousFilters.length > 0) {
       filteredData = filteredData.filter((item) =>
-        religions.every((religion) => item.religiousInfo?.[religion])
+        selectedReligions.every((religion) => item.religiousInfo?.[religion])
       );
+    }
+
+    if (minAge || maxAge) {
+      filteredData = filteredData.filter((item) => {
+        const age = item.age;
+        return (!minAge || age >= minAge) && (!maxAge || age <= maxAge);
+      });
     }
 
     setFilteredPeople(filteredData);
   };
 
   return (
-    <div style={{ display: 'flex', gap: '10px', marginBottom: 20 }}>
+    <div style={{ display: 'flex', gap: '10px', marginBottom: 20, flexWrap: 'wrap' }}>
       <Input
         placeholder="Поиск..."
         value={searchText}
@@ -82,6 +90,20 @@ const SearchFilters = ({ people, setFilteredPeople }) => {
           <Option key={filter.key} value={filter.key}>{filter.label}</Option>
         ))}
       </Select>
+      <Input
+        placeholder="Мин. возраст"
+        type="number"
+        value={minAge}
+        onChange={(e) => setMinAge(e.target.value)}
+        style={{ width: 120 }}
+      />
+      <Input
+        placeholder="Макс. возраст"
+        type="number"
+        value={maxAge}
+        onChange={(e) => setMaxAge(e.target.value)}
+        style={{ width: 120 }}
+      />
     </div>
   );
 };

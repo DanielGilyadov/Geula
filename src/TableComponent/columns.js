@@ -103,26 +103,32 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
   },
   {
     title: 'Возраст',
-    dataIndex: 'birthDate',
+    dataIndex: 'age',
     key: 'age',
-    render: (date) => {
-      if (!date || typeof date !== 'string') return '—';
-      const birthMoment = moment.utc(date, 'YYYY-MM-DD'); // Используем UTC
-      if (!birthMoment.isValid()) return 'Неверная дата';
-      return moment().diff(birthMoment, 'years');
-    },
+    // render: (date) => {
+    //   if (!date || typeof date !== 'string') return '—';
+    //   const birthMoment = moment.utc(date, 'YYYY-MM-DD'); // Используем UTC
+    //   if (!birthMoment.isValid()) return 'Неверная дата';
+    //   return moment().diff(birthMoment, 'years');
+    // },
   },  
   {
     title: 'Еврейская дата',
-    dataIndex: 'birthDate',
+    dataIndex: 'hebrewDate',
     key: 'hebrewDate',
-    render: (date) => {
-      if (!date) return '—';
-      const parsedDate = moment.utc(date, 'YYYY-MM-DD'); // Исправлено
-      if (!parsedDate.isValid()) return 'Неверная дата';
-      return new HDate(parsedDate.toDate()).toString();
-    },
+    // render: (date) => {
+    //   if (!date) return '—';
+    //   const parsedDate = moment.utc(date, 'YYYY-MM-DD'); // Исправлено
+    //   if (!parsedDate.isValid()) return 'Неверная дата';
+    //   return new HDate(parsedDate.toDate()).toString();
+    // },
   },  
+  {
+    title: 'Город',
+    dataIndex: ['address', 'city'], // Исправленный dataIndex
+    key: 'city',
+    render: (text) => text || '—',
+  },
   {
     title: '',
     key: 'action',

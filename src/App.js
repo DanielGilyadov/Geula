@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Layout, Menu, Badge, Card } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Badge, Dropdown, Card } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import AddPerson from './AddPerson';
 import TableComponent from './TableComponent/TableComponent';
 import Notifications from './Notifications';
-import { getUsers } from './api';
+import { getUsers, getNotifications, getDates } from './api';
 import './App.css';
 
 const { Content, Footer, Header } = Layout;
@@ -16,16 +16,23 @@ const App = () => {
   const location = useLocation();
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const notificationRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-
+  const [dates, setDates] = useState([])
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const users = await getUsers();
+        const noti = await getNotifications();
+        const dates = await getDates();
         if (users) {
           setPeople(users);
+        }
+        if (noti) {
+          setNotifications(noti);
+        }
+        if(dates){
+          setDates(dates)
         }
       } catch (error) {
         console.error('Ошибка при получении данных:', error);
@@ -38,14 +45,11 @@ const App = () => {
     setPeople((prevPeople) => [...prevPeople, newPerson]);
   };
 
-  const addNotification = (message) => {
-    setNotifications((prev) => [...prev, message]);
-    setUnreadCount((prev) => prev + 1);
-  };
-
-  const markNotificationsAsRead = () => {
-    setUnreadCount(0);
-  };
+  const notificationMenu = (
+    <Card className="notification-dropdown">
+      <Notifications notifications={notifications} />
+    </Card>
+  );
 
   return (
     <Layout>
@@ -58,27 +62,14 @@ const App = () => {
             <Link to="/add">Добавить</Link>
           </Menu.Item>
         </Menu>
-        <div
-          ref={notificationRef}
-          className="notification-icon"
-          onClick={() => {
-            setIsDropdownVisible(!isDropdownVisible);
-            if (!isDropdownVisible) markNotificationsAsRead();
-          }}
-        >
-          <Badge count={unreadCount}>
-            <BellOutlined style={{ fontSize: '24px' }} />
-          </Badge>
-          {isDropdownVisible && (
-            <Card className="notification-dropdown">
-              {notifications.length > 0 ? (
-                notifications.map((notif, index) => <p key={index}>{notif}</p>)
-              ) : (
-                <p>Нет новых оповещений</p>
-              )}
-            </Card>
-          )}
-        </div>
+        <span className="hebrew-date">{dates.hebrewDate}/{dates.gregorianDate}</span>
+        <Dropdown overlay={notificationMenu} trigger={["click"]} placement="bottomRight">
+          <div className="notification-icon" onClick={() => setIsDropdownVisible((prev) => !prev)}>
+            <Badge count={notifications.length}>
+              <BellOutlined style={{ fontSize: '24px', cursor: 'pointer' }} />
+            </Badge>
+          </div>
+        </Dropdown>
       </Header>
       <Content style={{ padding: '50px' }}>
         <Routes>
@@ -92,12 +83,10 @@ const App = () => {
                 setSearchText={setSearchText} 
                 expandedRowKeys={expandedRowKeys} 
                 setExpandedRowKeys={setExpandedRowKeys} 
-                addNotification={addNotification}
               />
             }
           />
           <Route path="/add" element={<AddPerson addPerson={addPerson} />} />
-          <Route path="/notifications" element={<Notifications notifications={notifications} />} />
         </Routes>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Metavision ©2025</Footer>
