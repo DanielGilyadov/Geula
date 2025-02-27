@@ -1,93 +1,115 @@
-/* Стили для хедера */
+/* Основные стили */
+.main-layout {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* Хедер */
 .header-menu {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 20px;
-  background: #E3F2FD; /* Нежный голубой */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0 20px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Стили для меню */
-.header-menu .ant-menu {
-  flex: 1;
-  background: transparent;
-}
-
-.header-menu .ant-menu-item a {
-  color: #333; /* Темно-серый, вместо белого для контраста */
-  font-size: 16px;
-  transition: color 0.3s ease-in-out;
-}
-
-.header-menu .ant-menu-item a:hover {
-  color: #4A90E2; /* Спокойный синий вместо яркого */
-}
-
-/* Стили для иконки уведомлений */
-.notification-icon {
-  position: relative;
-  margin-left: auto;
-  margin-right: 20px;
-  cursor: pointer;
-  color: #4A90E2; /* Смягченный синий */
-  font-size: 24px;
-  transition: color 0.3s ease-in-out;
-}
-
-.notification-icon:hover {
-  color: #2C7BE5;
-}
-
-/* Стили для бейджа (количества уведомлений) */
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #FF6B6B; /* Нежно-красный, но не резкий */
-  color: white;
-  font-size: 12px;
+.logo {
+  font-size: 20px;
   font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 50%;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  color: #1890ff;
 }
 
-
-/* Стили для выпадающего списка уведомлений */
-.notification-dropdown {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  margin-top: 5px;
-  width: 300px;
-  z-index: 1000;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-}
-
-.notification-dropdown p {
-  margin: 0;
-  padding: 8px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.notification-dropdown p:last-child {
+.menu-bar {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  background: transparent;
   border-bottom: none;
 }
 
-/* Стили для контента */
-.ant-layout-content {
-  padding: 50px;
-  background: #f0f2f5;
+.menu-bar .ant-menu-item {
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-/* Стили для футера */
-.ant-layout-footer {
+.menu-bar .ant-menu-item:hover {
+  background: rgba(24, 144, 255, 0.1);
+}
+
+/* Уведомления */
+.notification-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.bell-icon {
+  font-size: 20px;
+  color: #1890ff;
+  transition: color 0.3s;
+}
+
+.bell-icon:hover {
+  color: #40a9ff;
+}
+
+.notification-dropdown {
+  width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Контент */
+.content-area {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 1200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Подвал */
+.footer {
   text-align: center;
-  background: #001529;
-  color: white;
-  padding: 20px 50px;
+  padding: 16px;
+  background: #f0f2f5;
+  border-top: 1px solid #e8e8e8;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Ант-дизайн кнопки (добавить круглые углы) */
+.ant-btn {
+  border-radius: 12px !important;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+.ant-btn-primary {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+  background: #40a9ff !important;
+  border-color: #40a9ff !important;
+}
+
+.ant-btn-default {
+  border-radius: 12px;
+  border-color: #d9d9d9;
+}
+
+.ant-btn-default:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+}
+
+.community-emblem {
+  width: 60px;
+  height: 60px;
+  margin-left: 8px;
+  vertical-align: middle;
 }
