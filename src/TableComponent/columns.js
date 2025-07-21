@@ -111,7 +111,8 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Возраст',
     dataIndex: 'age',
     key: 'age',
-    width: 80,
+    align: 'center',
+    width: 50,
     render: (_, record) => {
       if (!record.birthDate || typeof record.birthDate !== 'string') return '—';
       const birthMoment = moment(record.birthDate, 'YYYY-MM-DD');

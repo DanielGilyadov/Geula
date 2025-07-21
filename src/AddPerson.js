@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addUser } from './api';
+import { useApp } from './context/AppContext';
 import PersonForm from './AddPersonForm/PersonForm';
+import { Spin } from 'antd';
 
-const AddPerson = ({ addPerson }) => { // Теперь принимаем setPeople как пропс
+const AddPerson = () => {
+  const { addPerson, loading } = useApp();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -38,40 +40,25 @@ const AddPerson = ({ addPerson }) => { // Теперь принимаем setPeo
     }
   
     try {
-      const newUser = await addUser(
-        formData.firstName,
-        formData.lastName,
-        formData.fatherName,
-        formData.birthDate,
-        formData.mobileNumber,
-        formData.email,
-        formData.gender,
-        formData.city,
-        formData.metroStation,
-        formData.street,
-        formData.houseNumber,
-        formData.entrance,
-        formData.apartment,
-        formData.floor
-      );
-  
-      addPerson(newUser); // Используем addPerson вместо setPeople
+      await addPerson(formData);
       navigate("/");
     } catch (error) {
+      // Ошибка уже обработана в Context
       console.error("Ошибка при добавлении пользователя:", error);
     }
   };
-  
 
   return (
-    <div>
-      <h2>Добавить нового человека</h2>
-      <PersonForm
-        formData={formData}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-      />
-    </div>
+    <Spin spinning={loading.people}>
+      <div>
+        <h2>Добавить нового человека</h2>
+        <PersonForm
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+        />
+      </div>
+    </Spin>
   );
 };
 

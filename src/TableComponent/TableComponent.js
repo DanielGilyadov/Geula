@@ -1,49 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Table, Button, Checkbox } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Checkbox, Spin } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
+import { useApp } from '../context/AppContext';
 import columns from './columns';
 import ExpandedRow from './ExpandedRow';
 import SearchFilters from './SearchFilters';
-import { updateUser } from '../api';
 import './Table.css';
 
-
-const TableComponent = ({ people, setPeople }) => {
+const TableComponent = () => {
+  const { people, updatePerson, loading } = useApp();
   const [filteredPeople, setFilteredPeople] = useState(people);
   const [editingKey, setEditingKey] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+
+  // Обновляем filteredPeople при изменении people
+  useEffect(() => {
+    setFilteredPeople(people);
+  }, [people]);
   
   const onSave = async (key) => {
     const updatedUser = people.find((p) => p.id === key);
     if (!updatedUser) return;
 
     try {
-      await updateUser(updatedUser);
-      setPeople([...people]);
+      await updatePerson(updatedUser);
       setEditingKey(null);
     } catch (error) {
+      // Ошибка уже обработана в Context
       console.error('Ошибка при сохранении:', error);
     }
-  };
-
-  const onChange = (key, field, value) => {
-    setPeople((prev) =>
-      prev.map((item) => {
-        if (item.id === key) {
-          const updatedItem = { ...item };
-          const keys = field.split('.');
-          if (keys.length > 1) {
-            updatedItem[keys[0]] = { ...updatedItem[keys[0]], [keys[1]]: value };
-          } else {
-            updatedItem[field] = value;
-          }
-          return updatedItem;
-        }
-        return item;
-      })
-    );
   };
 
   const onSelectAll = (checked) => {
@@ -84,6 +71,7 @@ const TableComponent = ({ people, setPeople }) => {
     {
       title: <Checkbox checked={selectAll} onChange={(e) => onSelectAll(e.target.checked)} />, 
       dataIndex: 'select',
+      align: 'center',
       render: (_, record) => (
         <Checkbox
           checked={selectedRowKeys.includes(record.id)}
@@ -91,11 +79,11 @@ const TableComponent = ({ people, setPeople }) => {
         />
       ),
     },
-    ...columns({ editingKey, setEditingKey, onSave, onChange, people: people || [] }),
+    ...columns({ editingKey, setEditingKey, onSave, onChange, people }),
   ];
 
   return (
-    <>
+    <Spin spinning={loading.people}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <SearchFilters people={people} setFilteredPeople={setFilteredPeople} />
         <Button type="primary" icon={<DownloadOutlined />} onClick={handleExport}>
@@ -112,7 +100,7 @@ const TableComponent = ({ people, setPeople }) => {
           ),
         }}
       />
-    </>
+    </Spin>
   );
 };
 
