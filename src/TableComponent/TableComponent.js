@@ -9,7 +9,7 @@ import SearchFilters from './SearchFilters';
 import './Table.css';
 
 const TableComponent = () => {
-  const { people, updatePerson, loading } = useApp();
+  const { people, updatePerson, updatePersonLocally, loading } = useApp();
   const [filteredPeople, setFilteredPeople] = useState(people);
   const [editingKey, setEditingKey] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -31,6 +31,10 @@ const TableComponent = () => {
       // Ошибка уже обработана в Context
       console.error('Ошибка при сохранении:', error);
     }
+  };
+
+  const onChange = (key, field, value) => {
+    updatePersonLocally(key, field, value);
   };
 
   const onSelectAll = (checked) => {

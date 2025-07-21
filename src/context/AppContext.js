@@ -97,7 +97,7 @@ export const AppProvider = ({ children }) => {
     }
   }, [handleError]);
 
-  // Обновление данных человека
+  // Обновление данных человека c сохранением на сервер
   const updatePerson = useCallback(async (updatedUser) => {
     try {
       setLoading(prev => ({ ...prev, people: true }));
@@ -123,6 +123,26 @@ export const AppProvider = ({ children }) => {
     }
   }, [handleError]);
 
+  // Обновление локальных данных человека 
+  const updatePersonLocally = useCallback((id, field, value) => {
+    
+    setPeople(prev => prev.map(person => {
+      if (person.id === id) {
+        const updatedPerson = { ...person };
+        const keys = field.split('.');
+        
+        if (keys.length > 1) {
+          updatedPerson[keys[0]] = { ...updatedPerson[keys[0]], [keys[1]]: value };
+        } else {
+          updatedPerson[field] = value;
+        }
+        
+        return updatedPerson;
+      }
+      return person;
+    }));
+  }, []);
+
   // Загрузка данных при монтировании
   useEffect(() => {
     loadAllData();
@@ -143,8 +163,8 @@ export const AppProvider = ({ children }) => {
     setNotifications,
     addPerson,
     updatePerson,
-    updatePersonLocally,
     loadAllData,
+    updatePersonLocally,
     
     // Утилиты
     handleError
