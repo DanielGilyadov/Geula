@@ -35,15 +35,15 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
   };
 
   return (
-    <Card title="Дополнительные данные" style={{ backgroundColor: '#f9f9f9', borderRadius: '10px', padding: '16px' }}>
+    <Card className="expanded-card" title="Дополнительные данные">
       <Form layout="vertical" form={form} initialValues={{
         religiousInfo: record.religiousInfo || {},
         address: record.address || {},
         notes: record.notes || '',
       }}>
-        <Row gutter={[16, 8]} align="middle">
+        <Row gutter={[16, 16]}>
           <Col span={12}>
-            <Title level={4}>Религиозные аспекты</Title>
+            <Title level={5}>Религиозные аспекты</Title>
             <Row gutter={[16, 8]}>
               {[
                 { key: 'keepsSabbath', label: 'Соблюдает шаббат' },
@@ -58,7 +58,7 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
                 <Col span={12} key={item.key}>
                   <Form.Item name={['religiousInfo', item.key]} valuePropName="checked">
                     <Checkbox disabled={!isEditing} onChange={(e) => handleInputChange(item.key, e.target.checked)}>
-                      <Text strong>{item.label}</Text>
+                      <Text>{item.label}</Text>
                     </Checkbox>
                   </Form.Item>
                 </Col>
@@ -66,10 +66,10 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
             </Row>
           </Col>
           <Col span={12}>
-            <Title level={4}>Место жительства</Title>
-            <Row gutter={[16, 8]} align="middle">
+            <Title level={5}>Место жительства</Title>
+            <Row gutter={[16, 8]}>
               {[
-                { key: 'city', label: 'Город проживания' },
+                { key: 'city', label: 'Город' },
                 { key: 'metroStation', label: 'Метро' },
                 { key: 'street', label: 'Улица' },
                 { key: 'houseNumber', label: 'Дом' },
@@ -78,11 +78,11 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
                 { key: 'floor', label: 'Этаж' },
               ].map((item) => (
                 <Col span={12} key={item.key}>
-                  <Form.Item style={{ marginBottom: 0 }}>
-                    <Space style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <Text strong style={{ minWidth: '150px' }}>{item.label}:</Text>
+                  <Form.Item>
+                    <Space>
+                      <Text strong>{item.label}:</Text>
                       {isEditing ? (
-                        <Input size="small" style={{ flex: 1 }} onChange={(e) => handleNestedInputChange(item.key, e.target.value)} />
+                        <Input size="small" onChange={(e) => handleNestedInputChange(item.key, e.target.value)} />
                       ) : (
                         <Text>{record.address?.[item.key] || '—'}</Text>
                       )}
@@ -96,7 +96,7 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
 
         <Divider />
 
-        <Title level={4}>Комментарии</Title>
+        <Title level={5}>Комментарии</Title>
         <Form.Item name="notes">
           {isEditing ? (
             <Input.TextArea rows={3} onChange={handleNotesChange} />

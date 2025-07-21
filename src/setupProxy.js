@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "https://geula-list.ru",
+      target: "https://geula-table.ru",
       changeOrigin: true,
       secure: false,
       pathRewrite: {

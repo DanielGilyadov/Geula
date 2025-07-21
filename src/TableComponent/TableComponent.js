@@ -6,6 +6,7 @@ import columns from './columns';
 import ExpandedRow from './ExpandedRow';
 import SearchFilters from './SearchFilters';
 import { updateUser } from '../api';
+import './Table.css';
 
 
 const TableComponent = ({ people, setPeople }) => {
