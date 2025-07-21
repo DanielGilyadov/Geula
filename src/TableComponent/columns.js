@@ -7,13 +7,14 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Имя',
     dataIndex: 'firstName',
     key: 'firstName',
+    width: 150,
     editable: true,
     render: (text, record) =>
       editingKey === record.id ? (
         <Input 
-          value={record.firstName || ''} // Используем value вместо defaultValue
+          value={record.firstName || ''} 
           onChange={(e) => onChange(record.id, 'firstName', e.target.value)} 
-          style={{ width: 120 }} 
+          style={{ width: '100%' }} 
         />
       ) : (
         text || '—'
@@ -23,13 +24,14 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Фамилия',
     dataIndex: 'lastName',
     key: 'lastName',
+    width: 150,
     editable: true,
     render: (text, record) =>
       editingKey === record.id ? (
         <Input 
           value={record.lastName || ''}
           onChange={(e) => onChange(record.id, 'lastName', e.target.value)} 
-          style={{ width: 150 }} 
+          style={{ width: '100%' }} 
         />
       ) : (
         text || '—'
@@ -39,13 +41,14 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Отчество',
     dataIndex: 'fatherName',
     key: 'fatherName',
+    width: 150,
     editable: true,
     render: (text, record) =>
       editingKey === record.id ? (
         <Input 
           value={record.fatherName || ''}
           onChange={(e) => onChange(record.id, 'fatherName', e.target.value)} 
-          style={{ width: 150 }} 
+          style={{ width: '100%' }} 
         />
       ) : (
         text || '—'
@@ -55,13 +58,14 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Номер телефона',
     dataIndex: 'mobileNumber',
     key: 'mobileNumber',
+    width: 150,
     editable: true,
     render: (text, record) =>
       editingKey === record.id ? (
         <Input 
           value={record.mobileNumber || ''}
           onChange={(e) => onChange(record.id, 'mobileNumber', e.target.value)} 
-          style={{ width: 120 }} 
+          style={{ width: '100%' }} 
         />
       ) : (
         text || '—'
@@ -71,13 +75,14 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Email',
     dataIndex: 'email',
     key: 'email',
+    width: 200,
     editable: true,
     render: (text, record) =>
       editingKey === record.id ? (
         <Input 
           value={record.email || ''}
           onChange={(e) => onChange(record.id, 'email', e.target.value)} 
-          style={{ width: 250 }} 
+          style={{ width: '100%' }} 
         />
       ) : (
         text || '—'
@@ -87,6 +92,7 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Дата рождения',
     dataIndex: 'birthDate',
     key: 'birthDate',
+    width: 140,
     editable: true,
     render: (text, record) =>
       editingKey === record.id ? (
@@ -94,7 +100,7 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
           value={record.birthDate ? moment(record.birthDate, 'YYYY-MM-DD') : null}
           onChange={(date, dateString) => onChange(record.id, 'birthDate', dateString)}
           format="YYYY-MM-DD"
-          style={{ width: 150 }}
+          style={{ width: '100%' }}
           placeholder="Выберите дату"
         />
       ) : (
@@ -105,33 +111,45 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
     title: 'Возраст',
     dataIndex: 'age',
     key: 'age',
-    // render: (date) => {
-    //   if (!date || typeof date !== 'string') return '—';
-    //   const birthMoment = moment.utc(date, 'YYYY-MM-DD'); // Используем UTC
-    //   if (!birthMoment.isValid()) return 'Неверная дата';
-    //   return moment().diff(birthMoment, 'years');
-    // },
+    width: 80,
+    render: (_, record) => {
+      if (!record.birthDate || typeof record.birthDate !== 'string') return '—';
+      const birthMoment = moment(record.birthDate, 'YYYY-MM-DD');
+      if (!birthMoment.isValid()) return '—';
+      return moment().diff(birthMoment, 'years');
+    },
   },  
   {
     title: 'Еврейская дата',
     dataIndex: 'hebrewDate',
     key: 'hebrewDate',
-    // render: (date) => {
-    //   if (!date) return '—';
-    //   const parsedDate = moment.utc(date, 'YYYY-MM-DD'); // Исправлено
-    //   if (!parsedDate.isValid()) return 'Неверная дата';
-    //   return new HDate(parsedDate.toDate()).toString();
-    // },
+    width: 140,
+    render: (_, record) => {
+      if (!record.birthDate) return '—';
+      try {
+        const parsedDate = moment(record.birthDate, 'YYYY-MM-DD');
+        if (!parsedDate.isValid()) return '—';
+        const jsDate = parsedDate.toDate();
+        const hdate = new HDate(jsDate);
+        return hdate.toString('h');
+      } catch (error) {
+        console.error('Ошибка при конвертации даты:', error);
+        return '—';
+      }
+    },
   },  
   {
     title: 'Город',
-    dataIndex: ['address', 'city'], // Исправленный dataIndex
+    dataIndex: ['address', 'city'],
     key: 'city',
+    width: 150,
     render: (text) => text || '—',
   },
   {
     title: '',
     key: 'action',
+    width: 140,
+    fixed: 'right',
     render: (_, record) => {
       const isEditing = editingKey === record.id;
       return isEditing ? (
@@ -140,7 +158,7 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
           onClick={() => { 
             onSave(record.id); 
           }} 
-          style={{ width: 120 }}
+          style={{ width: '100%' }}
         >
           Сохранить
         </Button>
@@ -148,7 +166,7 @@ const columns = ({ editingKey, setEditingKey, onSave, onChange }) => [
         <Button 
           type="primary" 
           onClick={() => setEditingKey(record.id)} 
-          style={{ width: 120 }}
+          style={{ width: '100%' }}
         >
           Редактировать
         </Button>
