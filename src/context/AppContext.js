@@ -29,11 +29,41 @@ export const AppProvider = ({ children }) => {
   // Функция для обработки ошибок
   const handleError = useCallback((error, context) => {
     console.error(`Ошибка в ${context}:`, error);
+    
+    let errorMessage = 'Произошла неизвестная ошибка';
+    
+    if (error.message) {
+      errorMessage = error.message;
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.status) {
+      switch (error.response.status) {
+        case 400:
+          errorMessage = 'Неверные данные запроса';
+          break;
+        case 404:
+          errorMessage = 'Ресурс не найден';
+          break;
+        case 500:
+          errorMessage = 'Внутренняя ошибка сервера';
+          break;
+        case 503:
+          errorMessage = 'Сервис временно недоступен';
+          break;
+        case 504:
+          errorMessage = 'Превышено время ожидания сервера';
+          break;
+        default:
+          errorMessage = `Ошибка ${error.response.status}`;
+      }
+    }
+    
     notification.error({
       message: 'Ошибка',
-      description: error.response?.data?.message || error.message || 'Произошла неизвестная ошибка',
+      description: errorMessage,
       duration: 4
     });
+    
     setErrors(prev => ({ ...prev, [context]: error }));
   }, []);
 
@@ -43,9 +73,18 @@ export const AppProvider = ({ children }) => {
       setLoading({ people: true, notifications: true, dates: true });
       
       const [usersData, notificationsData, datesData] = await Promise.all([
-        getUsers(),
-        getNotifications(),
-        getDates()
+        getUsers().catch(err => {
+          console.warn('Failed to load users:', err);
+          return [];
+        }),
+        getNotifications().catch(err => {
+          console.warn('Failed to load notifications:', err);
+          return [];
+        }),
+        getDates().catch(err => {
+          console.warn('Failed to load dates:', err);
+          return {};
+        })
       ]);
 
       setPeople(usersData || []);
@@ -110,7 +149,6 @@ export const AppProvider = ({ children }) => {
 
   // Обновление локальных данных человека 
   const updatePersonLocally = useCallback((id, field, value) => {
-    
     setPeople(prev => prev.map(person => {
       if (person.id === id) {
         const updatedPerson = { ...person };
@@ -131,35 +169,44 @@ export const AppProvider = ({ children }) => {
   // Получение родственников пользователя
   const getPersonRelations = useCallback(async (userId) => {
     try {
+      if (!userId) {
+        throw new Error('ID пользователя не указан');
+      }
+      
       const relations = await getUserRelations(userId);
       return relations || [];
     } catch (error) {
-      handleError(error, 'getPersonRelations');
+      console.error('Ошибка получения родственников:', error);
       return [];
     }
-  }, [handleError]);
+  }, []);
 
   // Создание новой родственной связи
   const addPersonRelation = useCallback(async (relationData) => {
     try {
-      setLoading(prev => ({ ...prev, people: true }));
+      // Валидация данных
+      if (!relationData.userId) {
+        throw new Error('ID пользователя обязателен');
+      }
+      
+      if (!relationData.relationType) {
+        throw new Error('Тип связи обязателен');
+      }
+      
+      if (!relationData.relatedUserId && !relationData.relatedPersonInfo) {
+        throw new Error('Необходимо указать связанного пользователя');
+      }
+      
+      console.log('Создание связи с данными:', relationData);
       
       const result = await createRelation(relationData);
       
-      notification.success({
-        message: 'Успешно',
-        description: 'Родственная связь создана',
-        duration: 3
-      });
-      
       return result;
     } catch (error) {
-      handleError(error, 'addPersonRelation');
+      console.error('Ошибка в addPersonRelation:', error);
       throw error;
-    } finally {
-      setLoading(prev => ({ ...prev, people: false }));
     }
-  }, [handleError]);
+  }, []);
 
   // Загрузка данных при монтировании
   useEffect(() => {
@@ -184,7 +231,7 @@ export const AppProvider = ({ children }) => {
     loadAllData,
     updatePersonLocally,
     getPersonRelations,
-    addPersonRelation,  // Добавляем новый метод
+    addPersonRelation,
     
     // Утилиты
     handleError

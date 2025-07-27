@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Form, Checkbox, Card, Row, Col, Typography, Divider, Input, Space } from 'antd';
-import { useApp } from '../context/AppContext';
-import RelationsComponent from './RelationsComponent';
+import RelationsDisplay from './RelationsDisplay';
 import './ExpandedRow.css';
 
 const { Text, Title } = Typography;
@@ -97,7 +96,7 @@ const ExpandedRow = ({ record, isEditing, onChange }) => {
           </Col>
 
           <Col span={8}>
-            <RelationsComponent userId={record.id} />
+            <RelationsDisplay userId={record.id} />
           </Col>
         </Row>
 
