@@ -4,7 +4,8 @@ const API_GET_USERS = "/api/api/users",  // Используем локальн�
       API_POST_USER = "/api/api/user/reg",
        API_PUT_USER = "/api/api/user",
        API_GET_NOTI = "/api/api/notifications",
-       API_DATES    = "/api/api/dates"
+       API_DATES    = "/api/api/dates",
+       API_RELATIONS = "/api/api/relations"  // Добавляем новый эндпоинт
 
 
 export const getUsers = async () => {
@@ -89,6 +90,17 @@ export const updateUser = async (user) => {
     }
 };
 
+// Новая функция для создания родственных связей
+export const createRelation = async (relationData) => {
+    try {
+        const response = await axios.post(API_RELATIONS, relationData);
+        console.log("Связь создана:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при создании связи:", error.response?.data || error.message);
+        throw error;
+    }
+};
 
 export const getNotifications = async () => {
     try {

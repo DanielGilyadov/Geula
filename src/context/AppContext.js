@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getUsers, addUser, updateUser, getNotifications, getDates, getUserRelations } from '../api';
+import { getUsers, addUser, updateUser, getNotifications, getDates, getUserRelations, createRelation } from '../api';
 import { notification } from 'antd';
 
 const AppContext = createContext();
@@ -139,6 +139,28 @@ export const AppProvider = ({ children }) => {
     }
   }, [handleError]);
 
+  // Создание новой родственной связи
+  const addPersonRelation = useCallback(async (relationData) => {
+    try {
+      setLoading(prev => ({ ...prev, people: true }));
+      
+      const result = await createRelation(relationData);
+      
+      notification.success({
+        message: 'Успешно',
+        description: 'Родственная связь создана',
+        duration: 3
+      });
+      
+      return result;
+    } catch (error) {
+      handleError(error, 'addPersonRelation');
+      throw error;
+    } finally {
+      setLoading(prev => ({ ...prev, people: false }));
+    }
+  }, [handleError]);
+
   // Загрузка данных при монтировании
   useEffect(() => {
     loadAllData();
@@ -162,6 +184,7 @@ export const AppProvider = ({ children }) => {
     loadAllData,
     updatePersonLocally,
     getPersonRelations,
+    addPersonRelation,  // Добавляем новый метод
     
     // Утилиты
     handleError
