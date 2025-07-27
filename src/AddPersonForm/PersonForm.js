@@ -93,6 +93,11 @@ const PersonForm = ({ formData, handleChange, handleSubmit }) => {
               </Radio.Group>
             </Item>
           </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Item label="Родственники">
+
+            </Item>
+          </Col>
         </Row>
 
         <Row gutter={[16, 16]}>
