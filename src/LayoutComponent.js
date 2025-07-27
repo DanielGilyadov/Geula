@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu, Badge, Dropdown, Card, Space } from 'antd';
+import { Layout, Menu, Badge, Dropdown, Space } from 'antd';
 import { BellOutlined, UserAddOutlined, HomeOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import Notifications from './Notifications';
@@ -12,9 +12,7 @@ const LayoutComponent = ({ children, notifications, dates, isDropdownVisible, se
   const location = useLocation();
 
   const notificationMenu = (
-    <Card className="notification-dropdown">
-      <Notifications notifications={notifications} />
-    </Card>
+    <Notifications notifications={notifications} />
   );
 
   return (
@@ -35,9 +33,14 @@ const LayoutComponent = ({ children, notifications, dates, isDropdownVisible, se
           <span className="hebrew-date">
             <strong>{dates.hebrewDate}</strong> &nbsp; | &nbsp; <strong>{dates.gregorianDate}</strong>
           </span>
-          <Dropdown overlay={notificationMenu} trigger={["click"]} placement="bottomRight">
+          <Dropdown 
+            overlay={notificationMenu} 
+            trigger={["click"]} 
+            placement="bottomRight"
+            overlayStyle={{ padding: 0 }}
+          >
             <div className="notification-icon" onClick={() => setIsDropdownVisible((prev) => !prev)}>
-              <Badge count={notifications.length} offset={[10, 0]}>
+              <Badge count={notifications.length} offset={[10, 0]} size="small">
                 <BellOutlined className="bell-icon" />
               </Badge>
             </div>
