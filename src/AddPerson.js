@@ -20,7 +20,8 @@ const AddPerson = () => {
     houseNumber: "",
     entrance: "",
     apartment: "",
-    floor: ""
+    floor: "",
+    relations: [] // Добавляем поле для родственников
   });
 
   const navigate = useNavigate();
@@ -30,6 +31,14 @@ const AddPerson = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  // Добавляем специальный обработчик для родственников
+  const handleRelationsChange = (relations) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      relations: relations,
     }));
   };
 
@@ -55,6 +64,7 @@ const AddPerson = () => {
         <PersonForm
           formData={formData}
           handleChange={handleChange}
+          handleRelationsChange={handleRelationsChange}
           handleSubmit={handleSubmit}
         />
       </div>

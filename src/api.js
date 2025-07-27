@@ -18,9 +18,27 @@ export const getUsers = async () => {
     }
 };
 
-export const addUser = async (firstName, lastName, fatherName, birthDate, mobileNumber, email, gender, city, metroStation, street, houseNumber, entrance, apartment, floor) => {
+export const addUser = async (userData) => {
     try {
-        const response = await axios.post(API_POST_USER, {
+        const {
+            firstName,
+            lastName,
+            fatherName,
+            birthDate,
+            mobileNumber,
+            email,
+            gender,
+            city,
+            metroStation,
+            street,
+            houseNumber,
+            entrance,
+            apartment,
+            floor,
+            relations = []
+        } = userData;
+
+        const requestData = {
             firstName,
             lastName,
             fatherName,
@@ -36,8 +54,11 @@ export const addUser = async (firstName, lastName, fatherName, birthDate, mobile
                 entrance,
                 apartment,
                 floor
-            }
-        });
+            },
+            relations: relations
+        };
+
+        const response = await axios.post(API_POST_USER, requestData);
         return response.data; // Возвращаем данные после добавления
     } catch (error) {
         console.error("Ошибка при создании:", error);
@@ -52,12 +73,13 @@ export const updateUser = async (user) => {
         return;
       }
   
-      const { id, address, religiousInfo, ...userData } = user;
+      const { id, address, religiousInfo, relations, ...userData } = user;
   
       const response = await axios.put(`${API_PUT_USER}/${id}`, {
         ...userData,
         address: { ...address },
         religiousInfo: { ...religiousInfo },
+        relations: relations || [],
       });
   
       return response.data;
@@ -90,3 +112,13 @@ export const getDates = async () => {
     }
 };
 
+export const getUserRelations = async (userId) => {
+    try {
+        const response = await axios.get(`/api/api/relations/user/${userId}`);
+        console.log(response.data);
+        return response.data; // Возвращаем полученные данные
+    } catch (error) {
+        console.error("Ошибка при получении родственников:", error);
+        return null; // Возвращаем null в случае ошибки
+    }
+};

@@ -1,28 +1,62 @@
-import React from "react";
-import { Input, Button, Form, DatePicker, Radio, Row, Col, Card, Space } from "antd";
+import React, { useState } from "react";
+import { Input, Button, Form, DatePicker, Radio, Row, Col, Card, Space, Select, Modal, Checkbox } from "antd";
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useApp } from "../context/AppContext";
 
 const { Item } = Form;
+const { Option } = Select;
 
-const PersonForm = ({ formData, handleChange, handleSubmit }) => {
+const PersonForm = ({ formData, handleChange, handleRelationsChange, handleSubmit }) => {
+  const { people } = useApp();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentRelation, setCurrentRelation] = useState({
+    relatedUserId: null,
+    relationType: "",
+    createReverse: false,
+    notes: "",
+    relatedPersonInfo: null
+  });
+  const [isExternalPerson, setIsExternalPerson] = useState(false);
+  const [externalPersonData, setExternalPersonData] = useState({
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    gender: "",
+    isDeceased: false,
+    mobileNumber: ""
+  });
+
+  // Типы родственных связей
+  const relationTypes = [
+    { value: 'father', label: 'Отец' },
+    { value: 'mother', label: 'Мать' },
+    { value: 'son', label: 'Сын' },
+    { value: 'daughter', label: 'Дочь' },
+    { value: 'brother', label: 'Брат' },
+    { value: 'sister', label: 'Сестра' },
+    { value: 'grandfather', label: 'Дедушка' },
+    { value: 'grandmother', label: 'Бабушка' },
+    { value: 'uncle', label: 'Дядя' },
+    { value: 'aunt', label: 'Тетя' },
+    { value: 'cousin', label: 'Двоюродный брат/сестра' },
+    { value: 'spouse', label: 'Супруг(а)' },
+    { value: 'other', label: 'Другое' }
+  ];
+
   // Функция для форматирования телефона
   const formatPhoneNumber = (value) => {
-    // Удаляем все нецифровые символы
     let phoneNumber = value.replace(/\D/g, '');
     
-    // Если номер начинается с 8, меняем на 7
     if (phoneNumber.startsWith('8')) {
       phoneNumber = '7' + phoneNumber.slice(1);
     }
     
-    // Если номер не начинается с 7, добавляем 7 в начало
     if (!phoneNumber.startsWith('7')) {
       phoneNumber = '7' + phoneNumber;
     }
     
-    // Ограничиваем длину до 11 цифр (7 + 10 цифр номера)
     phoneNumber = phoneNumber.slice(0, 11);
     
-    // Форматируем номер
     const phoneNumberLength = phoneNumber.length;
     
     if (phoneNumberLength <= 1) return '+7';
@@ -41,13 +75,79 @@ const PersonForm = ({ formData, handleChange, handleSubmit }) => {
   const handlePhoneChange = (e) => {
     let value = e.target.value;
     
-    // Если пользователь пытается удалить +7, не даем это сделать
     if (value.length < 2) {
       value = '+7';
     }
     
     const formattedPhone = formatPhoneNumber(value);
     handleChange({ target: { name: 'mobileNumber', value: formattedPhone } });
+  };
+
+  // Добавление родственника
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalOk = () => {
+    const newRelation = {
+      ...currentRelation
+    };
+
+    if (isExternalPerson) {
+      newRelation.relatedPersonInfo = { ...externalPersonData };
+      delete newRelation.relatedUserId;
+    } else {
+      delete newRelation.relatedPersonInfo;
+    }
+
+    const updatedRelations = [...(formData.relations || []), newRelation];
+    handleRelationsChange(updatedRelations);
+
+    // Сброс формы
+    setCurrentRelation({
+      relatedUserId: null,
+      relationType: "",
+      createReverse: false,
+      notes: "",
+      relatedPersonInfo: null
+    });
+    setExternalPersonData({
+      firstName: "",
+      lastName: "",
+      birthDate: "",
+      gender: "",
+      isDeceased: false,
+      mobileNumber: ""
+    });
+    setIsExternalPerson(false);
+    setIsModalVisible(false);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  // Удаление родственника
+  const removeRelation = (index) => {
+    const updatedRelations = formData.relations.filter((_, i) => i !== index);
+    handleRelationsChange(updatedRelations);
+  };
+
+  // Получение отображаемого имени родственника
+  const getRelationDisplayName = (relation) => {
+    if (relation.relatedUserId) {
+      const person = people.find(p => p.id === relation.relatedUserId);
+      return person ? `${person.firstName} ${person.lastName}` : 'Неизвестный пользователь';
+    } else if (relation.relatedPersonInfo) {
+      return `${relation.relatedPersonInfo.firstName} ${relation.relatedPersonInfo.lastName}`;
+    }
+    return 'Неизвестный родственник';
+  };
+
+  // Получение типа связи на русском
+  const getRelationTypeLabel = (type) => {
+    const relation = relationTypes.find(r => r.value === type);
+    return relation ? relation.label : type;
   };
 
   return (
@@ -95,7 +195,34 @@ const PersonForm = ({ formData, handleChange, handleSubmit }) => {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <Item label="Родственники">
-
+              <div>
+                <Button 
+                  type="dashed" 
+                  onClick={showModal} 
+                  icon={<PlusOutlined />}
+                  style={{ width: "100%", marginBottom: 8 }}
+                >
+                  Добавить родственника
+                </Button>
+                {formData.relations && formData.relations.length > 0 && (
+                  <div style={{ border: "1px solid #d9d9d9", borderRadius: "6px", padding: "8px", maxHeight: "120px", overflowY: "auto" }}>
+                    {formData.relations.map((relation, index) => (
+                      <div key={index} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", padding: "4px", backgroundColor: "#f9f9f9", borderRadius: "4px" }}>
+                        <span style={{ fontSize: "12px" }}>
+                          <strong>{getRelationTypeLabel(relation.relationType)}</strong>: {getRelationDisplayName(relation)}
+                        </span>
+                        <Button 
+                          type="text" 
+                          danger 
+                          size="small" 
+                          icon={<DeleteOutlined />}
+                          onClick={() => removeRelation(index)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Item>
           </Col>
         </Row>
@@ -171,6 +298,141 @@ const PersonForm = ({ formData, handleChange, handleSubmit }) => {
           </Button>
         </Item>
       </Form>
+
+      {/* Модальное окно для добавления родственника */}
+      <Modal
+        title="Добавить родственника"
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+        width={600}
+        okText="Добавить"
+        cancelText="Отмена"
+      >
+        <Form layout="vertical">
+          <Item label="Тип родственной связи">
+            <Select
+              value={currentRelation.relationType}
+              onChange={(value) => setCurrentRelation({...currentRelation, relationType: value})}
+              placeholder="Выберите тип связи"
+            >
+              {relationTypes.map(type => (
+                <Option key={type.value} value={type.value}>{type.label}</Option>
+              ))}
+            </Select>
+          </Item>
+
+          <Item>
+            <Checkbox
+              checked={isExternalPerson}
+              onChange={(e) => setIsExternalPerson(e.target.checked)}
+            >
+              Родственник не в базе данных
+            </Checkbox>
+          </Item>
+
+          {isExternalPerson ? (
+            <>
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Item label="Имя">
+                    <Input
+                      value={externalPersonData.firstName}
+                      onChange={(e) => setExternalPersonData({...externalPersonData, firstName: e.target.value})}
+                    />
+                  </Item>
+                </Col>
+                <Col span={12}>
+                  <Item label="Фамилия">
+                    <Input
+                      value={externalPersonData.lastName}
+                      onChange={(e) => setExternalPersonData({...externalPersonData, lastName: e.target.value})}
+                    />
+                  </Item>
+                </Col>
+              </Row>
+              
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Item label="Дата рождения">
+                    <DatePicker
+                      style={{ width: "100%" }}
+                      onChange={(date, dateString) => setExternalPersonData({...externalPersonData, birthDate: dateString})}
+                    />
+                  </Item>
+                </Col>
+                <Col span={12}>
+                  <Item label="Пол">
+                    <Radio.Group 
+                      value={externalPersonData.gender} 
+                      onChange={(e) => setExternalPersonData({...externalPersonData, gender: e.target.value})}
+                    >
+                      <Radio value="М">М</Radio>
+                      <Radio value="Ж">Ж</Radio>
+                    </Radio.Group>
+                  </Item>
+                </Col>
+              </Row>
+
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Item label="Телефон">
+                    <Input
+                      value={externalPersonData.mobileNumber}
+                      onChange={(e) => setExternalPersonData({...externalPersonData, mobileNumber: e.target.value})}
+                    />
+                  </Item>
+                </Col>
+                <Col span={12}>
+                  <Item>
+                    <Checkbox
+                      checked={externalPersonData.isDeceased}
+                      onChange={(e) => setExternalPersonData({...externalPersonData, isDeceased: e.target.checked})}
+                    >
+                      Умерший
+                    </Checkbox>
+                  </Item>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <Item label="Выберите пользователя">
+              <Select
+                value={currentRelation.relatedUserId}
+                onChange={(value) => setCurrentRelation({...currentRelation, relatedUserId: value})}
+                placeholder="Выберите пользователя из базы"
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {people.map(person => (
+                  <Option key={person.id} value={person.id}>
+                    {person.firstName} {person.lastName}
+                  </Option>
+                ))}
+              </Select>
+            </Item>
+          )}
+
+          <Item>
+            <Checkbox
+              checked={currentRelation.createReverse}
+              onChange={(e) => setCurrentRelation({...currentRelation, createReverse: e.target.checked})}
+            >
+              Создать обратную связь
+            </Checkbox>
+          </Item>
+
+          <Item label="Комментарий">
+            <Input.TextArea
+              value={currentRelation.notes}
+              onChange={(e) => setCurrentRelation({...currentRelation, notes: e.target.value})}
+              rows={3}
+            />
+          </Item>
+        </Form>
+      </Modal>
     </Card>
   );
 };

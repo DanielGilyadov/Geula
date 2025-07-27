@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getUsers, addUser, updateUser, getNotifications, getDates } from '../api';
+import { getUsers, addUser, updateUser, getNotifications, getDates, getUserRelations } from '../api';
 import { notification } from 'antd';
 
 const AppContext = createContext();
@@ -63,22 +63,7 @@ export const AppProvider = ({ children }) => {
     try {
       setLoading(prev => ({ ...prev, people: true }));
       
-      const newUser = await addUser(
-        formData.firstName,
-        formData.lastName,
-        formData.fatherName,
-        formData.birthDate,
-        formData.mobileNumber,
-        formData.email,
-        formData.gender,
-        formData.city,
-        formData.metroStation,
-        formData.street,
-        formData.houseNumber,
-        formData.entrance,
-        formData.apartment,
-        formData.floor
-      );
+      const newUser = await addUser(formData);
 
       setPeople(prev => [...prev, newUser]);
       
@@ -143,6 +128,17 @@ export const AppProvider = ({ children }) => {
     }));
   }, []);
 
+  // Получение родственников пользователя
+  const getPersonRelations = useCallback(async (userId) => {
+    try {
+      const relations = await getUserRelations(userId);
+      return relations || [];
+    } catch (error) {
+      handleError(error, 'getPersonRelations');
+      return [];
+    }
+  }, [handleError]);
+
   // Загрузка данных при монтировании
   useEffect(() => {
     loadAllData();
@@ -165,6 +161,7 @@ export const AppProvider = ({ children }) => {
     updatePerson,
     loadAllData,
     updatePersonLocally,
+    getPersonRelations,
     
     // Утилиты
     handleError

@@ -1,0 +1,168 @@
+/* Карточка раскрытой строки */
+.expanded-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 8px 0;
+}
+
+.expanded-card .ant-card-head-title {
+  font-weight: 600;
+  color: #1890ff;
+}
+
+/* Стили для родственников */
+.relations-section {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.relation-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.relation-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}
+
+.relation-type-tag {
+  margin-bottom: 4px;
+}
+
+.relation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.relation-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.relation-contact {
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.relation-notes {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border-left: 3px solid #e8e8e8;
+}
+
+/* Стили для умерших родственников */
+.relation-deceased {
+  opacity: 0.7;
+  background-color: #f5f5f5;
+}
+
+.relation-deceased .relation-name {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* Модальное окно для добавления родственника */
+.ant-modal-content {
+  border-radius: 12px;
+}
+
+.ant-modal-header {
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-modal-title {
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.ant-modal-body {
+  padding: 24px;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Стили для формы в модальном окне */
+.ant-form-item-label > label {
+  font-weight: 500;
+  color: #333;
+}
+
+.ant-select-selector,
+.ant-input,
+.ant-picker {
+  border-radius: 6px;
+}
+
+.ant-select-selector:hover,
+.ant-input:hover,
+.ant-picker:hover {
+  border-color: #40a9ff;
+}
+
+.ant-select-focused .ant-select-selector,
+.ant-input:focus,
+.ant-picker:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Кнопка добавления родственника */
+.relations-add-button {
+  background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+  border: none;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.relations-add-button:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.4);
+}
+
+/* Скролл для списка родственников */
+.relations-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.relations-section::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.relations-section::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.relations-section::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .expanded-card .ant-col {
+    margin-bottom: 16px;
+  }
+  
+  .relations-section {
+    max-height: 200px;
+  }
+}
